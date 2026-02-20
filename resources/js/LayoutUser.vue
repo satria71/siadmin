@@ -353,7 +353,6 @@ const user = computed(() => usePage().props.auth.user)
                             <div>{{ user.nama }}</div>
                             <div class="mt-1 small text-secondary">{{ user.bagian }}</div>    
                         </div>
-                        
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
@@ -365,6 +364,7 @@ const user = computed(() => usePage().props.auth.user)
                     <Link href="/logout" method="post" as="button" class="dropdown-item">Logout</Link>
                 </div>
                 </div>
+                
             </div>
             </div>
         </header>

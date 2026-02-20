@@ -1,6 +1,7 @@
 import './bootstrap';
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '@tabler/core/dist/css/tabler.min.css'
 import '@tabler/core/dist/js/tabler.min.js'
 import '@tabler/core/dist/css/tabler-vendors.min.css'

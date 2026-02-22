@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use App\Models\Karyawan;
 
 
 class AuthController extends Controller
@@ -33,6 +36,28 @@ class AuthController extends Controller
         return back()->withErrors([
             'nik' => 'Email atau password salah.',
         ]);
+    }
+
+    public function prosesregister(Request $request)
+    {
+        // Validasi
+        $request->validate([
+            'nik' => 'required|unique:karyawans,nik',
+            'nama' => 'required|string|max:255',
+            'bagian' => 'required|string|max:255',
+            'password' => 'required|min:3',
+        ]);
+
+        // Simpan ke database
+        Karyawan::create([
+            'nik' => $request->nik,
+            'nama' => $request->nama,
+            'bagian' => $request->bagian,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Redirect setelah sukses
+        return redirect()->route('login')->with('success', 'Registrasi berhasil!');
     }
 
     public function logout(Request $request)

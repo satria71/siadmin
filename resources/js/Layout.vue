@@ -344,11 +344,7 @@ const user = computed(() => usePage().props.auth.user)
             <ul class="navbar-nav pt-lg-3">
                 <li class="nav-item">
                     <Link class="nav-link d-flex align-items-center" href="/panel">
-                        <font-awesome-icon :icon="['far', 'home']" 
-                        fixed-width
-                        style="font-size: 18px;"
-                        class="menu-icon me-2"/>
-                        <span class="nav-link-title"> Home </span>
+                        <span class="nav-link-title"> Dashboard </span>
                     </Link>
                 </li>
                 <li class="nav-item">
@@ -376,7 +372,7 @@ const user = computed(() => usePage().props.auth.user)
                         <span class="nav-link-title"> Karyawan </span>
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#"> Karyawan </a>
+                        <a class="dropdown-item" href="#"> Data Karyawan </a>
                         <a class="dropdown-item" href="#"> Buat DHR </a>
                         <a class="dropdown-item" href="#"> Laporan </a>
                     </div>
@@ -518,7 +514,7 @@ const user = computed(() => usePage().props.auth.user)
                         <span class="nav-link-title"> Management Akun </span>
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#"> Daftar Akun </a>
+                        <Link class="dropdown-item" href="/register"> Daftar Akun </Link>
                         <a class="dropdown-item" href="#"> Lihat Data </a>
                     </div>
                 </li>
@@ -815,6 +811,15 @@ const user = computed(() => usePage().props.auth.user)
                         </svg>
                     </span>
                 </div>
+                <li class="nav-item active">
+                    <Link class="nav-link d-flex align-items-center" href="/panel">
+                        <font-awesome-icon :icon="['far', 'home']" 
+                        fixed-width
+                        style="font-size: 18px;"
+                        class="menu-icon me-2"/>
+                        <span class="nav-link-title"> Home </span>
+                    </Link>
+                </li>
                 <li class="nav-item">
                     <a
                         class="nav-link"

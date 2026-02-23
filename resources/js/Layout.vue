@@ -319,7 +319,7 @@ const user = computed(() => usePage().props.auth.user)
             </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"> </span>
+                <span class="avatar avatar-sm" style="background-image:"> </span>
                 <div class="d-none d-xl-block ps-2">
                     <div v-if="user">
                         <!-- Halo, {{ user.name }} |
@@ -777,7 +777,7 @@ const user = computed(() => usePage().props.auth.user)
             </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(./static/avatars/000m.jpg)"> </span>
+                <span class="avatar avatar-sm" style="background-image:"> </span>
                 <div class="d-none d-xl-block ps-2">
                     <div v-if="user">
                         <div>{{ user.nama }}</div>

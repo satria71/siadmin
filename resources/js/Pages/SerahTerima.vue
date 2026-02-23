@@ -21,7 +21,7 @@ defineProps({ user: Object })
         <Head title="Serah Terima" />
         <!-- BEGIN PAGE HEADER -->
         <div class="page-header d-print-none" aria-label="Page header">
-            <div class="container-xl">
+            <div class="container-fluid">
                 <div class="row g-2 align-items-center">
                     <div class="col">
                     <!-- Page pre-title -->
@@ -148,7 +148,7 @@ defineProps({ user: Object })
             <!-- END MODAL -->
 
         <div class="page-body">
-            <div class="container-xl">
+            <div class="container-fluid">
 
             </div>
         </div>

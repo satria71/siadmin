@@ -2,9 +2,12 @@ import './bootstrap';
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+
+import '@tabler/core/dist/css/tabler-vendors.min.css'
 import '@tabler/core/dist/css/tabler.min.css'
 import '@tabler/core/dist/js/tabler.min.js'
-import '@tabler/core/dist/css/tabler-vendors.min.css'
+
+import '../css/app.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -13,6 +16,7 @@ import { faUser as faUserRegular, faHome, faHand, faAddressCard, faBell, faMoon,
     faArrowAltCircleRight, faFileArchive, faAlarmClock, faFileClipboard, faBuilding,
     faPenToSquare, faSquarePlus} from '@fortawesome/free-regular-svg-icons'
 // import { faFacebook, faGithub } from '@fortawesome/free-brands-svg-icons'
+
 
 library.add(faUser, faHome, faRightFromBracket, faUserRegular, faHand, faAddressCard
     , faBell, faMoon, faArrowAltCircleRight, faFileArchive, faAlarmClock, 

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FraudController;
+use App\Http\Controllers\SerahTerimaController;
 use Inertia\Inertia;
 
 // Route::get('/', function () {
@@ -14,15 +16,11 @@ Route::get('/', [GeneralController::class, 'index']);
 Route::post('/login', [AuthController::class, 'proseslogin'])
     ->name('login');
 
-Route::post('/register', [AuthController::class, 'prosesregister']);
-
 Route::get('/login', function () {
     return Inertia::render('auth/Login');
 })->name('login');
 
-Route::get('/register', function () {
-    return Inertia::render('auth/Register');
-})->name('register');
+
 
 // Route::get('/panel', function () {
 //     return Inertia::render('dashboard/Panel');
@@ -58,8 +56,24 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
         return Inertia::render('dashboard/Panel');
     })->name('panel');
 
-    Route::get('/serahterima', function () {
-        return Inertia::render('SerahTerima');
-    })->name('serahterima');
+    // Route::get('/serahterima', function () {
+    //     return Inertia::render('SerahTerima');
+    // })->name('serahterima');
 
+    Route::get('/serahterima', [SerahTerimaController::class, 'index'])
+    ->name('serahterima');
+
+    // Route::get('/register', function () {
+    //     return Inertia::render('auth/Register');
+    // })->name('register');
+
+    Route::get('/register', [AuthController::class, 'viewregister'])
+    ->name('register');
+
+    Route::post('/register', [AuthController::class, 'prosesregister']);
+
+    Route::get('/fraud', [FraudController::class, 'index'])
+    ->name('fraud');
+    
+    Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
 });

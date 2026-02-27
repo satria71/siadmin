@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+/* @import 'tailwindcss'; */
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -13,4 +13,12 @@
 .menu-icon {
     font-size: 18px;
     width: 22px;
+}
+
+#fraudTable.dataTable tbody td {
+    font-size: 13px;
+}
+
+#fraudTable.dataTable thead th {
+    font-size: 12px;
 }

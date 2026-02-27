@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Models\Karyawan;
+use Inertia\Inertia;
 
 
 class AuthController extends Controller
@@ -36,6 +37,11 @@ class AuthController extends Controller
         return back()->withErrors([
             'nik' => 'Email atau password salah.',
         ]);
+    }
+
+    public function viewregister()
+    {
+        return Inertia::render('auth/Register');
     }
 
     public function prosesregister(Request $request)

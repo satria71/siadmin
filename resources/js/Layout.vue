@@ -433,7 +433,7 @@ const user = computed(() => usePage().props.auth.user)
                         <span class="nav-link-title"> Fraud </span>
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#"> Data Fraud </a>
+                        <Link class="dropdown-item" href="/fraud"> Data Fraud </Link>
                         <a class="dropdown-item" href="#"> Laporan Fraud </a>
                     </div>
                 </li>

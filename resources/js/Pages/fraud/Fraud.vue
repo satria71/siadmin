@@ -10,7 +10,15 @@ useDataTable(
     'fraudTable',
     '/fraud/data',
     [
-        { data: 'id', name: 'id' },
+        {
+            data: null,
+            name: 'no',
+            orderable: false,
+            searchable: false,
+            render: function (data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }
+        },  
         { data: 'tanggal', name: 'tanggal' },
         { data: 'nik', name: 'nik' },
         { data: 'fraud', name: 'fraud' },
@@ -79,7 +87,7 @@ useDataTable(
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="fraudTable" class="table table-vcenter table-selectable">
+                                <table id="fraudTable" class="table table-vcenter table-striped">
                                     <thead>
                                         <tr>
                                             <th>No. </th>
@@ -92,19 +100,6 @@ useDataTable(
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- <div class="table-responsive">
-                        <table id="fraudTable" class="table table-vcenter card-table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>No. </th>
-                                    <th>Tanggal</th>
-                                    <th>NIK</th>
-                                    <th>Fraud</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div> -->
                 </div>
             </div>
         </div>

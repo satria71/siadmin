@@ -76,14 +76,6 @@ useDataTable(
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-table">
-                        <!-- <div class="card-header">
-                            <div class="row w-full">
-                                <div class="col">
-                                    <h3 class="card-title mb-0">Fraud</h3>
-                                    <p class="text-secondary m-0">Table description.</p>
-                                </div>
-                            </div>
-                        </div> -->
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table id="fraudTable" class="table table-vcenter table-striped">

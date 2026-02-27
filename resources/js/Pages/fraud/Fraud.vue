@@ -49,42 +49,41 @@ useDataTable(
 <template>
     <Layout>
         <Head title="Fraud" />
-        <!-- BEGIN PAGE HEADER -->
-        <div class="page-header d-print-none" aria-label="Page header">
-            <div class="container-fluid">
-                <div class="row g-2 align-items-center">
-                    <div class="col">
-                    <!-- Page pre-title -->
-                    <!-- <div class="page-pretitle">Overview</div> -->
-                    <h2 class="page-title">Fraud</h2>
-                    </div>
-                    <!-- Page title actions -->
-                    <div class="col-auto ms-auto d-print-none">
-                        <div class="btn-list">
-                            <a href="#" class="btn btn-primary btn-5 d-none d-sm-inline-block"
-                            @click.prevent="showModal">
-                            Buat Baru
-                            </a>
+            <!-- BEGIN PAGE HEADER -->
+            <div class="page-header d-print-none" aria-label="Page header">
+                <div class="container-fluid">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                        <!-- Page pre-title -->
+                        <!-- <div class="page-pretitle">Overview</div> -->
+                        <h2 class="page-title">Fraud</h2>
+                        </div>
+                        <!-- Page title actions -->
+                        <div class="col-auto ms-auto d-print-none">
+                            <div class="btn-list">
+                                <a href="#" class="btn btn-primary btn-5 d-none d-sm-inline-block"
+                                @click.prevent="showModal">
+                                Buat Baru
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- END PAGE HEADER -->
-
+            <!-- END PAGE HEADER -->
+        
         <div class="page-body">
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-table">
-                        <div class="card-header">
+                        <!-- <div class="card-header">
                             <div class="row w-full">
                                 <div class="col">
                                     <h3 class="card-title mb-0">Fraud</h3>
                                     <p class="text-secondary m-0">Table description.</p>
                                 </div>
-                                <!-- <div id="exportButtons" class="d-flex gap-2"></div> -->
                             </div>
-                        </div>
+                        </div> -->
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table id="fraudTable" class="table table-vcenter table-striped">

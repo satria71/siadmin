@@ -9,6 +9,7 @@ import '@tabler/core/dist/js/tabler.min.js'
 
 import '../css/app.css'
 
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'

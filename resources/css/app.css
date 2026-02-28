@@ -10,30 +10,6 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Body tidak boleh scroll */
-/* html, body {
-    height: 100%;
-    overflow: hidden;
-} */
-
-/* Layout full tinggi */
-/* .page {
-    height: 100vh;
-} */
-
-/* Wrapper pakai flex column */
-/* .page-wrapper {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-} */
-
-/* Hanya bagian content yang boleh scroll */
-/* .page-body {
-    flex: 1;
-    overflow-y: auto;
-} */
-
 html, body {
     height: 100%;
     overflow: hidden;
@@ -52,6 +28,11 @@ html, body {
 .page-body {
     flex: 1;
     overflow-y: auto;
+}
+
+#fraudTable tbody td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
 }
 
 .menu-icon {

@@ -30,6 +30,7 @@ export function useDataTable(tableId, ajaxUrl, columns, options = {}) {
             ajax: ajaxUrl,
             columns: columns,
             ...options
+            
         })
 
         // if (options.buttons) {

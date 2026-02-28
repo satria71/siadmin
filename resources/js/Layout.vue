@@ -850,9 +850,9 @@ const user = computed(() => usePage().props.auth.user)
             </header>
             <!-- END NAVBAR  -->
 
-            <div class="page-body">
+            <!-- <div class="page-body"> -->
                 <slot />
-            </div>
+            <!-- </div> -->
         
             <!--  BEGIN FOOTER  -->
             <footer class="footer footer-transparent d-print-none">

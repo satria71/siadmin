@@ -5,6 +5,7 @@ use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FraudController;
 use App\Http\Controllers\SerahTerimaController;
+use App\Http\Controllers\MasterKaryawanController;
 use Inertia\Inertia;
 
 // Route::get('/', function () {
@@ -76,4 +77,8 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     ->name('fraud');
     
     Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
+
+    //Master Karyawan
+    Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])
+    ->name('masterKaryawan');
 });

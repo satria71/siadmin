@@ -372,7 +372,7 @@ const user = computed(() => usePage().props.auth.user)
                             <span class="nav-link-title"> Karyawan </span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#"> Data Karyawan </a>
+                            <Link class="dropdown-item" href="/masterKaryawan"> Data Karyawan </Link>
                             <a class="dropdown-item" href="#"> Buat DHR </a>
                             <a class="dropdown-item" href="#"> Laporan </a>
                         </div>

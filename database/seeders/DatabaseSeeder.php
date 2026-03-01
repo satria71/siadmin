@@ -25,5 +25,7 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call(UserSeeder::class);
+        $this->call(FraudSeeder::class);
+        $this->call(MasterKaryawanSeeder::class);
     }
 }

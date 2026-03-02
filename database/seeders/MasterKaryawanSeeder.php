@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\MasterKaryawan;
 
 class MasterKaryawanSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class MasterKaryawanSeeder extends Seeder
         MasterKaryawan::create([
             'nik_lama' => '',
             'nik' => '2015401125',
-            'nama' => 'Tes Name',
+            'nama' => 'Satria',
             'lokasi' => 'DCI',
             'bagian' => 'Admin',
             'jabatan' => 'SPV',
@@ -24,7 +25,7 @@ class MasterKaryawanSeeder extends Seeder
             'status' => 'Kontrak',
             'tgl_efektif' => '2025-10-10',
             'tgl_tetap' => '2025-10-10',
-            'tgl_keluar' => '22025-10-10',
+            'tgl_keluar' => '2025-10-10',
             'status_kerja' => 'Aktif',
         ]);
 

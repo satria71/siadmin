@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class MasterKaryawan extends Model
 {
+    public $timestamps = false;
+    
     protected $fillable = [
         'nik_lama',
         'nik',

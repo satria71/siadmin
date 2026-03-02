@@ -48,3 +48,21 @@ html, body {
     font-size: 12px;
 }
 
+#masterKaryawanTable tbody td {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+.menu-icon {
+    font-size: 18px;
+    width: 22px;
+}
+
+#masterKaryawanTable.dataTable tbody td {
+    font-size: 13px;
+}
+
+#masterKaryawanTable.dataTable thead th {
+    font-size: 12px;
+}
+

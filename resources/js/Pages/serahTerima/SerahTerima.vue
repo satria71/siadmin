@@ -12,12 +12,16 @@ const showModal = () => {
 
 const user = computed(() => usePage().props.auth.user)
 
+defineOptions({
+  layout: Layout
+})
+
 defineProps({ user: Object })
 
 </script>
 
 <template>
-    <Layout>
+    <!-- <Layout> -->
         <Head title="Serah Terima" />
         <div class="page-wrapper">
             <!-- BEGIN PAGE HEADER -->
@@ -154,5 +158,5 @@ defineProps({ user: Object })
 
             </div>
         </div>
-    </Layout>
+    <!-- </Layout> -->
 </template>

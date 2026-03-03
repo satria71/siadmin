@@ -8,10 +8,14 @@ const user = computed(() => usePage().props.auth.user)
 
 defineProps({ user: Object })
 
+defineOptions({
+  layout: Layout
+})
+
 </script>
 
 <template>
-    <Layout>
+    <!-- <Layout> -->
         <Head title="Welcome" />
         <!-- BEGIN PAGE HEADER -->
         <div class="page-header d-print-none" aria-label="Page header">
@@ -505,7 +509,7 @@ defineProps({ user: Object })
             </div>
         </div>
         <!-- END PAGE BODY -->
-    </Layout>
+    <!-- </Layout> -->
 </template>
 
 <style scoped>

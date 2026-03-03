@@ -13,6 +13,10 @@ const showModal = () => {
 
 const user = computed(() => usePage().props.auth.user)
 
+defineOptions({
+  layout: Layout
+})
+
 defineProps({ user: Object })
 
 useDataTable(
@@ -99,7 +103,7 @@ useDataTable(
 </script>
 
 <template>
-    <Layout>
+    <!-- <Layout> -->
         <Head title="Fraud" />
         <!-- BEGIN PAGE HEADER -->
         <div class="page-header d-print-none" aria-label="Page header">
@@ -257,5 +261,5 @@ useDataTable(
             </div>
         </div>
         <!-- END MODAL -->
-    </Layout>
+    <!-- </Layout> -->
 </template>

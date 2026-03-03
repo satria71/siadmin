@@ -141,10 +141,14 @@ useDataTable(
     },
 )
 
+defineOptions({
+  layout: Layout
+})
+
 </script>
 
 <template>
-    <Layout>
+    <!-- <Layout> -->
         <Head title="Master Karyawan" />
         <!-- BEGIN PAGE HEADER -->
         <!-- <div class="page-header d-print-none" aria-label="Page header">
@@ -274,7 +278,7 @@ useDataTable(
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <!-- <div class="row"> -->
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <label class="form-label">Status Kerja</label>
@@ -316,8 +320,8 @@ useDataTable(
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
+                                <!-- </div> -->
+                                <!-- <div class="row"> -->
                                     <div class="row mb-3">
                                         <div class="col-md-4">
                                             <label class="form-label">Tanggal Efektif</label>
@@ -332,8 +336,8 @@ useDataTable(
                                             <input type="date" class="form-control">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row">
+                                <!-- </div> -->
+                                <!-- <div class="row"> -->
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Keterangan Masuk</label>
@@ -344,7 +348,7 @@ useDataTable(
                                             <textarea v-model="form.ket_keluar" class="form-control" rows="3"></textarea>
                                         </div>
                                     </div>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </div>
                     </div>
@@ -566,5 +570,5 @@ useDataTable(
         </div>
         <!-- END MODAL -->
 
-    </Layout>
+    <!-- </Layout> -->
 </template>

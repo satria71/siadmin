@@ -22,24 +22,6 @@ Route::get('/login', function () {
 })->name('login');
 
 
-
-// Route::get('/panel', function () {
-//     return Inertia::render('dashboard/Panel');
-// })->middleware(['auth:karyawan', 'admin'])->name('panel');
-
-// Route::post('/logout', [AuthController::class, 'logout'])
-//     ->middleware('auth:karyawan')
-//     ->name('logout');
-
-// Route::get('/dashboard', function () {
-//     return Inertia::render('dashboard/Dashboard');
-// })->middleware('auth:karyawan')->name('dashboard');
-
-// Route::get('/serahterima', function () {
-//     return Inertia::render('SerahTerima');
-// })->name('serahterima');
-
-
 Route::middleware('auth:karyawan')->group(function () {
 
     Route::get('/dashboard', function () {
@@ -68,19 +50,19 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     //     return Inertia::render('auth/Register');
     // })->name('register');
 
+    //Register
     Route::get('/register', [AuthController::class, 'viewregister'])
     ->name('register');
-
     Route::post('/register', [AuthController::class, 'prosesregister']);
 
+    //Fraud
     Route::get('/fraud', [FraudController::class, 'index'])
     ->name('fraud');
-    
     Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
 
     //Master Karyawan
     Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])
     ->name('masterKaryawan');
-
     Route::get('/masterKaryawan/data', [MasterKaryawanController::class, 'data'])->name('masterKaryawan.data');
+    Route::get('/masterKaryawan/{id}', [MasterKaryawanController::class, 'show']);
 });

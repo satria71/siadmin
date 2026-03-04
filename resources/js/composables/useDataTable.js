@@ -1,5 +1,6 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 import $ from 'jquery'
+window.$ = window.jQuery = $
 
 import 'datatables.net-bs5'
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css'
@@ -32,10 +33,6 @@ export function useDataTable(tableId, ajaxUrl, columns, options = {}) {
             ...options
             
         })
-
-        // if (options.buttons) {
-        //     table.buttons().container().appendTo('#exportButtons')
-        // }
     })
 
     onBeforeUnmount(() => {
@@ -45,5 +42,7 @@ export function useDataTable(tableId, ajaxUrl, columns, options = {}) {
         }
     })
 
-    return { table }
+    return {
+        getTable: () => table
+    }
 }

@@ -6,6 +6,7 @@ import { ref, computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { Modal } from 'bootstrap'
 import { watch } from 'vue'
+import { onMounted } from 'vue'
 
 //reset
 const initialForm = {
@@ -53,6 +54,15 @@ const resetForm = () => {
     form.value = { ...initialForm }
 }
 
+const fillForm = (row) => {
+    if (!row) return
+
+    form.value = {
+        ...initialForm,
+        ...row
+    }
+}
+
 const showModal = () => {
     const modalEl = document.getElementById('modal-report')
     const modal = new Modal(modalEl)
@@ -68,7 +78,7 @@ const user = computed(() => usePage().props.auth.user)
 
 defineProps({ user: Object })
 
-useDataTable(
+const { getTable } = useDataTable(
     'masterKaryawanTable',
     '/masterKaryawan/data',
 
@@ -96,6 +106,9 @@ useDataTable(
                 searchable: false,
                 render: function (data, type, row) {
                     return `
+                        <button class="btn btn-warning btn-sm detail-btn" data-id="${data}">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
                         <button class="btn btn-warning btn-sm edit-btn" data-id="${data}">
                             <i class="fa-solid fa-pen-to-square"> </i> Edit
                         </button>
@@ -143,6 +156,21 @@ useDataTable(
 
 defineOptions({
   layout: Layout
+})
+
+
+
+onMounted(() => {
+    $('#masterKaryawanTable tbody').on('click', '.edit-btn', function () {
+
+        const table = getTable()
+        if (!table) return
+
+        const rowData = table.row($(this).closest('tr')).data()
+        if (!rowData) return
+
+        fillForm(rowData)
+    })
 })
 
 </script>
@@ -359,7 +387,6 @@ defineOptions({
                             </div>
                         </div>
                     </div>
-                
 
                     <div class="col-sm-12 col-lg-12">
                         <div class="card">
@@ -561,7 +588,6 @@ defineOptions({
                             Reset
                         </button>
                         <a href="#" class="btn btn-primary btn-5 ms-auto" data-bs-dismiss="modal">
-                            <!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
                             Simpan
                         </a>
                     </div>

@@ -58,4 +58,11 @@ class MasterKaryawanController extends Controller
             "data" => $data
         ]);
     }
+
+    public function show($id)
+    {
+        return response()->json(
+            MasterKaryawan::findOrFail($id)
+        );
+    }
 }

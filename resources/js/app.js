@@ -15,13 +15,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { faUser as faUserRegular, faHome, faHand, faAddressCard, faBell, faMoon, 
     faArrowAltCircleRight, faFileArchive, faAlarmClock, faFileClipboard, faBuilding,
-    faPenToSquare, faSquarePlus} from '@fortawesome/free-regular-svg-icons'
+    faPenToSquare, faSquarePlus,faEye} from '@fortawesome/free-regular-svg-icons'
 // import { faFacebook, faGithub } from '@fortawesome/free-brands-svg-icons'
 
 
 library.add(faUser, faHome, faRightFromBracket, faUserRegular, faHand, faAddressCard
     , faBell, faMoon, faArrowAltCircleRight, faFileArchive, faAlarmClock, 
-    faFileClipboard, faPenToSquare, faBuilding, faSquarePlus
+    faFileClipboard, faPenToSquare, faBuilding, faSquarePlus,faEye
 )
 
 createInertiaApp({

@@ -65,4 +65,18 @@ class MasterKaryawanController extends Controller
             MasterKaryawan::findOrFail($id)
         );
     }
+
+    // public function tampilDetailKaryawan()
+    // {
+    //     return Inertia::render('masterKaryawan/DetailKaryawan');
+    // }
+
+    public function tampilDetailKaryawan($id)
+    {
+        $karyawan = MasterKaryawan::findOrFail($id);
+
+        return Inertia::render('masterKaryawan/DetailKaryawan', [
+            'karyawan' => $karyawan
+        ]);
+    }
 }

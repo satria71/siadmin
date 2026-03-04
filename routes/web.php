@@ -64,5 +64,6 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])
     ->name('masterKaryawan');
     Route::get('/masterKaryawan/data', [MasterKaryawanController::class, 'data'])->name('masterKaryawan.data');
-    Route::get('/masterKaryawan/{id}', [MasterKaryawanController::class, 'show']);
+    Route::get('/masterKaryawan/{id}', [MasterKaryawanController::class, 'tampilDetailKaryawan'])
+    ->name('masterKaryawan');
 });

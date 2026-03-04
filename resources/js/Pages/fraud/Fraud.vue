@@ -1,6 +1,6 @@
 <script setup>
 import Layout from '../../Layout.vue'
-import { useDataTable } from '@/composables/useDataTable'
+import { useDataTable } from '@/Composables/useDataTable'
 import { Head } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'

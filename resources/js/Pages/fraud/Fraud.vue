@@ -134,9 +134,9 @@ useDataTable(
                     <div class="card-table">
                         <div class="card-header">
                             <div class="col">
-                          <h3 class="card-title mb-0">Fraud Admin</h3>
-                          <p class="text-secondary m-0">Monitoring data fraud admin</p>
-                        </div>
+                                <h3 class="card-title mb-0">Fraud Admin</h3>
+                                <p class="text-secondary m-0">Monitoring data fraud admin</p>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

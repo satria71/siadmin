@@ -284,6 +284,12 @@ defineOptions({
                     <div class="col-sm-12 col-lg-12">
                         <div class="card">
                             <div class="card-body">
+                                <div class="card-header">
+                                    <div class="col">
+                                        <h3 class="card-title mb-0">Data Master Karyawan</h3>
+                                        <!-- <p class="text-secondary m-0">Monitoring data fraud admin</p> -->
+                                    </div>
+                                </div>
                                 <div class="table-responsive">
                                     <table id="masterKaryawanTable" class="table table-vcenter table-striped">
                                         <thead>

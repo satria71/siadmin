@@ -4,6 +4,11 @@ import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 
+defineProps({
+    auth: Object,
+    errors: Object
+})
+
 const user = computed(() => usePage().props.auth.user)
 
 </script>

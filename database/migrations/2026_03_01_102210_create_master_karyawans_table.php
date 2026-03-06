@@ -16,16 +16,19 @@ return new class extends Migration
             $table->string('nik_lama');
             $table->string('nik');
             $table->string('nama');
-            $table->string('lokasi');
+            $table->string('gudang');
             $table->string('bagian');
+            $table->string('kelas');
             $table->string('jabatan');
             $table->string('tipe');
-            $table->string('jc');
-            $table->string('status');
+            $table->string('status_kerja');
+            $table->string('status_karyawan');
+            $table->string('job_class');
             $table->date('tgl_efektif');
             $table->date('tgl_tetap');
             $table->date('tgl_keluar');
-            $table->string('status_kerja');
+            $table->string('ket_masuk');
+            $table->string('ket_keluar');
         });
     }
 

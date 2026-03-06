@@ -20,7 +20,7 @@ defineOptions({
 defineProps({ user: Object })
 
 useDataTable(
-    'fraudTable',
+    'setTable',
     '/fraud/data',
 
         [
@@ -140,7 +140,7 @@ useDataTable(
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="fraudTable" class="table table-vcenter table-striped">
+                                <table id="setTable" class="table table-vcenter table-striped">
                                     <thead>
                                         <tr>
                                             <th>No. </th>

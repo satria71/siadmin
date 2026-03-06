@@ -15,7 +15,7 @@ class MasterKaryawanController extends Controller
 
     public function data(Request $request)
     {
-        $columns = ['nik', 'nama', 'lokasi', 'bagian', 'status_kerja','tgl_efektif','tgl_tetap'];
+        $columns = ['id','nik', 'nama', 'lokasi', 'bagian', 'status_kerja','tgl_efektif','tgl_tetap'];
 
         $query = MasterKaryawan::query();
 
@@ -26,7 +26,7 @@ class MasterKaryawanController extends Controller
         $query->where(function ($q) use ($search) {
             $q->where('nik', 'like', "%{$search}%")
               ->orWhere('nama', 'like', "%{$search}%")
-              ->orWhere('lokasi', 'like', "%{$search}%")
+              ->orWhere('gudang', 'like', "%{$search}%")
               ->orWhere('bagian', 'like', "%{$search}%")
               ->orWhere('status_kerja', 'like', "%{$search}%");
         });
@@ -78,5 +78,50 @@ class MasterKaryawanController extends Controller
         return Inertia::render('masterKaryawan/DetailKaryawan', [
             'karyawan' => $karyawan
         ]);
+    }
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'nik' => 'required',
+        'nama' => 'required',
+    ]);
+
+    MasterKaryawan::create([
+        'nik' => $request->nik,
+        'nik_lama' => $request->nik_lama,
+        'nama' => $request->nama,
+        'gudang' => $request->gudang,
+        'bagian' => $request->bagian,
+        'kelas' => $request->kelas,
+        'jabatan' => $request->jabatan,
+        'tipe' => $request->tipe,
+        'status_kerja' => $request->status_kerja,
+        'status_karyawan' => $request->status_karyawan,
+        'job_class' => $request->job_class,
+        'tgl_efektif' => $request->tgl_efektif,
+        'tgl_tetap' => $request->tgl_tetap,
+        'tgl_keluar' => $request->tgl_keluar,
+        'ket_masuk' => $request->ket_masuk,
+        'ket_keluar' => $request->ket_keluar,
+    ]);
+
+        return redirect()->back();
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = MasterKaryawan::findOrFail($id);
+
+        $data->update($request->all());
+
+        return redirect()->back();
+    }
+
+    public function delete($id)
+    {
+        MasterKaryawan::findOrFail($id)->delete();
+
+        return redirect()->back();
     }
 }

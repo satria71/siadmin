@@ -19,7 +19,6 @@ const activeTab = ref('Absensi')
 
 const breadcrumbs = [
   { label: 'Dashboard', url: '/panel' },
-  { label: 'Karyawan', url: '/masterKaryawan' },
   { label: 'Data Karyawan', url: '/masterKaryawan' },
   { label: 'Detail Karyawan', url: 'detailKaryawan' },
 ]
@@ -35,7 +34,10 @@ const form = reactive({
   status_kerja: props.karyawan?.status_kerja ?? '',
   status_karyawan: props.karyawan?.status_karyawan ?? '',
   tipe: props.karyawan?.tipe ?? '',
-  jobclass: props.karyawan?.jobclass ?? '',
+  job_class: props.karyawan?.job_class ?? '',
+  tgl_efektif: props.karyawan?.tgl_efektif ?? '',
+  tgl_tetap: props.karyawan?.tgl_tetap ?? '',
+  tgl_keluar: props.karyawan?.tgl_keluar ?? '',
   ket_masuk: props.karyawan?.ket_masuk ?? '',
   ket_keluar: props.karyawan?.ket_keluar ?? '',
 })
@@ -53,50 +55,15 @@ const form = reactive({
                         <h2 class="page-title">Detail Karyawan</h2>
                     </div>
                 </div>
+                <div class="col-auto"><br>
+                    <Breadcrumb :items="breadcrumbs" />
+                </div>
             </div>
         </div>
         <!-- END PAGE HEADER -->
 
     <div class="page-body">
         <div class="container-fluid">
-            <div class="col-auto">
-                <Breadcrumb :items="breadcrumbs" /><br>
-            </div>
-
-            <!-- ================= PROFILE SUMMARY ================= -->
-            <!-- <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row align-items-center">
-
-                    <div class="col-auto">
-                        <span class="avatar avatar-xl"
-                        :style="`background-image: url('/images/default.png')`">
-                        </span>
-                    </div>
-
-                    <div class="col">
-                        <h3 class="mb-0">{{ karyawan.nama }}</h3>
-                        <div class="text-muted">{{ karyawan.jabatan }}</div>
-
-                        <div class="mt-2">
-                        <span 
-                            class="badge"
-                            :class="karyawan.status_karyawan === 'AKTIF'
-                            ? 'bg-success-lt'
-                            : 'bg-danger-lt'">
-                            {{ karyawan.status_karyawan }}
-                        </span>
-
-                        <span class="badge bg-blue-lt ms-2">
-                            {{ karyawan.status_kerja }}
-                        </span>
-                        </div>
-                    </div>
-
-                    </div>
-                </div>
-            </div> -->
-
             <div class="row row-deck row-cards">
                 <!-- <div class="col-lg-8"> -->
                     <div class="card">
@@ -122,38 +89,43 @@ const form = reactive({
                                 <div class="col-md-5">
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">NIK</div>
-                                        <div class="col-md-4 fw-medium"> : {{ form.nik }}</div>
+                                        <div class="col-md-4 text-muted">NIK</div>
+                                        <div class="col-md-6 fw-medium"> : {{ form.nik }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">NIK Lama</div>
-                                        <div class="col-md-4"> : {{ form.nik_lama }}</div>
+                                        <div class="col-md-4 text-muted">NIK Lama</div>
+                                        <div class="col-md-6"> : {{ form.nik_lama }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Nama</div>
-                                        <div class="col-md-4"> : {{ form.nama }}</div>
+                                        <div class="col-md-4 text-muted">Nama</div>
+                                        <div class="col-md-6"> : {{ form.nama }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Gudang</div>
-                                        <div class="col-md-4"> : {{ form.gudang }}</div>
+                                        <div class="col-md-4 text-muted">Gudang</div>
+                                        <div class="col-md-6"> : {{ form.gudang }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Bagian</div>
-                                        <div class="col-md-4"> : {{ form.bagian }}</div>
+                                        <div class="col-md-4 text-muted">Bagian</div>
+                                        <div class="col-md-6"> : {{ form.bagian }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Kelas</div>
-                                        <div class="col-md-4"> : {{ form.kelas }}</div>
+                                        <div class="col-md-4 text-muted">Kelas</div>
+                                        <div class="col-md-6"> : {{ form.kelas }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Status Kerja</div>
-                                        <div class="col-md-4"> :
+                                        <div class="col-md-4 text-muted">Jabatan</div>
+                                        <div class="col-md-6"> : {{ form.jabatan }}</div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4 text-muted">Status Kerja</div>
+                                        <div class="col-md-6"> :
                                         <span class="badge bg-blue-lt">
                                             {{ form.status_kerja }}
                                         </span>
@@ -165,38 +137,46 @@ const form = reactive({
                                 <div class="col-md-5">
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">NIK</div>
-                                        <div class="col-md-4 fw-medium">{{ form.nik }}</div>
+                                        <div class="col-md-4 text-muted">Tipe</div>
+                                        <div class="col-md-6 fw-medium"> : {{ form.tipe }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">NIK Lama</div>
-                                        <div class="col-md-4">{{ form.nik_lama }}</div>
+                                        <div class="col-md-4 text-muted">Status Karyawan</div>
+                                        <div class="col-md-6"> : {{ form.status_karyawan }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Gudang</div>
-                                        <div class="col-md-4">{{ form.gudang }}</div>
+                                        <div class="col-md-4 text-muted">Job Class</div>
+                                        <div class="col-md-6"> : {{ form.job_class }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Bagian</div>
-                                        <div class="col-md-4">{{ form.bagian }}</div>
+                                        <div class="col-md-4 text-muted">Tanggal Efektif</div>
+                                        <div class="col-md-6"> : {{ form.tgl_efektif }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Kelas</div>
-                                        <div class="col-md-4">{{ form.kelas }}</div>
+                                        <div class="col-md-4 text-muted">Tanggal Tetap</div>
+                                        <div class="col-md-6"> : {{ form.tgl_tetap }}</div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="col-md-2 text-muted">Status Kerja</div>
-                                        <div class="col-md-4">
-                                        <span class="badge bg-blue-lt">
-                                            {{ form.status_kerja }}
-                                        </span>
-                                        </div>
+                                        <div class="col-md-4 text-muted">Tanggal Keluar</div>
+                                        <div class="col-md-6"> : {{ form.tgl_keluar }}</div>
                                     </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4 text-muted">Ket Masuk</div>
+                                        <div class="col-md-6"> : {{ form.ket_masuk }}</div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-4 text-muted">Ket Keluar</div>
+                                        <div class="col-md-6"> : {{ form.ket_keluar }}</div>
+                                    </div>
+
+                                    
 
                                 </div>
                             </div>

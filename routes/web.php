@@ -61,9 +61,10 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
 
     //Master Karyawan
-    Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])
-    ->name('masterKaryawan');
+    Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])->name('masterKaryawan');
     Route::get('/masterKaryawan/data', [MasterKaryawanController::class, 'data'])->name('masterKaryawan.data');
-    Route::get('/masterKaryawan/{id}', [MasterKaryawanController::class, 'tampilDetailKaryawan'])
-    ->name('masterKaryawan');
+    Route::get('/masterKaryawan/{id}', [MasterKaryawanController::class, 'tampilDetailKaryawan'])->name('masterKaryawan');
+    Route::post('/masterKaryawan/store', [MasterKaryawanController::class, 'store']);
+    Route::put('/masterKaryawan/update/{id}', [MasterKaryawanController::class, 'update']);
+    Route::delete('/masterKaryawan/delete/{id}', [MasterKaryawanController::class, 'delete']);
 });

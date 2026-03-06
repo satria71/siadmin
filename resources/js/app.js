@@ -2,6 +2,7 @@ import './bootstrap';
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 
 import '@tabler/core/dist/css/tabler-vendors.min.css'

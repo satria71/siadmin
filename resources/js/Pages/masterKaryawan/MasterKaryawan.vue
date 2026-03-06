@@ -8,18 +8,26 @@ import { Modal } from 'bootstrap'
 import { watch } from 'vue'
 import { onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
-
+import { useForm } from '@inertiajs/vue3'
 import Breadcrumb from '@/Components/Breadcrumb.vue'
+import Swal from 'sweetalert2'
+
+const isEdit = ref(false)
+const selectedId = ref(null)
 
 const breadcrumbs = [
   { label: 'Dashboard', url: '/panel' },
-  { label: 'Karyawan', url: '/masterKaryawan' },
   { label: 'Data Karyawan', url: 'masterKaryawan' },
 ]
 
+defineProps({
+    auth: Object,
+    errors: Object
+})
+
 
 //reset
-const initialForm = {
+const form = useForm({
     nik: '',
     nik_lama: '',
     nama: '',
@@ -30,15 +38,15 @@ const initialForm = {
     tipe: '',
     status_kerja: '',
     status_karyawan: '',
-    jobclass: '',
+    job_class: '',
     tgl_efektif: '',
     tgl_tetap: '',
     tgl_keluar: '',
     ket_masuk: '',
     ket_keluar: ''
-}
+})
 
-const form = ref({ ...initialForm })
+// const form = ref({ ...initialForm })
 
 const daftarJabatan = {
     ADMIN: ['PHARMACIST', 'BPB SUPPLIER & NPB STORE', 'INVENTORY', 'TECHNICAL SUPPORT', 'CCTV' ],
@@ -51,45 +59,54 @@ const daftarJabatan = {
 }
 
 const jabatanOptions = computed(() => {
-    return daftarJabatan[form.value.bagian] || []
+    return daftarJabatan[form.bagian] || []
 })
 
 //Reset jabatan saat bagian berubah
-watch(() => form.value.bagian, () => {
-    form.value.jabatan = ''
+watch(() => form.bagian, () => {
+
+    if (!isEdit.value) {
+        form.jabatan = ''
+    }
+
 })
 
 //Reset form
 const resetForm = () => {
-    form.value = { ...initialForm }
+    form.reset()
+    form.clearErrors()
+    isEdit.value = false
+    selectedId.value = null
 }
 
 const fillForm = (row) => {
-    if (!row) return
 
-    form.value = {
-        ...initialForm,
-        ...row
-    }
+    Object.assign(form, row)
+
+    selectedId.value = row.id
+    isEdit.value = true
+
+    showModal()
 }
 
 const showModal = () => {
+
+    if (!isEdit.value) {
+        resetForm()
+    }
+
     const modalEl = document.getElementById('modal-report')
     const modal = new Modal(modalEl)
-
-    modalEl.addEventListener('hidden.bs.modal', () => {
-        resetForm()
-    })
 
     modal.show()
 }
 
 const user = computed(() => usePage().props.auth.user)
 
-defineProps({ user: Object })
+// defineProps({ user: Object })
 
 const { getTable } = useDataTable(
-    'masterKaryawanTable',
+    'setTable',
     '/masterKaryawan/data',
 
         [
@@ -104,7 +121,7 @@ const { getTable } = useDataTable(
             },  
             { data: 'nik', name: 'nik' },
             { data: 'nama', name: 'nama' },
-            { data: 'lokasi', name: 'lokasi' },
+            { data: 'gudang', name: 'gudang' },
             { data: 'bagian', name: 'bagian' },
             { data: 'status_kerja', name: 'status_kerja',
                 render: function (data, type, row) {
@@ -221,20 +238,24 @@ const { getTable } = useDataTable(
 
 onMounted(() => {
 
+    const modalEl = document.getElementById('modal-report')
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        resetForm()
+    })
+
     // DETAIL BUTTON
-    $('#masterKaryawanTable tbody').on('click', '.detail-btn', function () {
+    $('#setTable tbody').on('click', '.detail-btn', function () {
 
         const id = $(this).data('id')
-        // console.log("Klik detail ID:", id)
 
         if (!id) return
 
-        // SPA navigation (tanpa reload)
         router.visit(`/masterKaryawan/${id}`)
     })
 
     // EDIT BUTTON
-    $('#masterKaryawanTable tbody').on('click', '.edit-btn', function () {
+    $('#setTable tbody').on('click', '.edit-btn', function () {
 
         const table = getTable()
         if (!table) return
@@ -243,8 +264,99 @@ onMounted(() => {
         if (!rowData) return
 
         fillForm(rowData)
+
+    })
+
+    // HAPUS BUTTON
+    $('#setTable tbody').on('click', '.delete-btn', function () {
+
+    const id = $(this).data('id')
+
+        Swal.fire({
+            title: 'Yakin hapus data?',
+            text: "Data tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                router.delete(`/masterKaryawan/delete/${id}`, {
+                    onSuccess: () => {
+
+                        // Swal.fire({
+                        //     icon: 'success',
+                        //     title: 'Berhasil',
+                        //     text: 'Data berhasil dihapus',
+                        //     timer: 1500,
+                        //     showConfirmButton: false
+                        // })
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Data berhasil dihapus',
+                            showConfirmButton: false,
+                            timer: 2500
+                        })
+
+                        $('#setTable').DataTable().ajax.reload()
+                    }
+                })
+
+            }
+
+        })
     })
 })
+
+const submitForm = () => {
+
+    const url = isEdit.value
+        ? `/masterKaryawan/update/${selectedId.value}`
+        : '/masterKaryawan/store'
+
+    const method = isEdit.value ? 'put' : 'post'
+
+    form[method](url, {
+        onSuccess: () => {
+            // SweetAlert
+            // Swal.fire({
+            //     icon: 'success',
+            //     title: 'Berhasil',
+            //     text: isEdit.value 
+            //         ? 'Data karyawan berhasil diperbarui'
+            //         : 'Data karyawan berhasil ditambahkan',
+            //     // timer: 2000,
+            //     showConfirmButton: true
+            // })
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: isEdit.value
+                    ? 'Data Karyawan diperbarui'
+                    : 'Data karyawan ditambahkan',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            })
+
+            form.reset()
+
+            $('#setTable').DataTable().ajax.reload()
+
+            const modalEl = document.getElementById('modal-report')
+            const modal = Modal.getInstance(modalEl)
+            modal.hide()
+        }
+    })
+}
 
 defineOptions({
   layout: Layout
@@ -271,15 +383,16 @@ defineOptions({
                         </div>
                     </div>
                 </div>
+                <div class="col-auto"><br>
+                    <Breadcrumb :items="breadcrumbs" />
+                </div>
             </div>
         </div>
         <!-- END PAGE HEADER -->
 
         <div class="page-body">
             <div class="container-fluid">
-                <div class="col-auto">
-                    <Breadcrumb :items="breadcrumbs" /><br>
-                </div>
+                
                 <div class="row row-deck row-cards">
                     <div class="col-sm-12 col-lg-12">
                         <div class="card">
@@ -291,7 +404,8 @@ defineOptions({
                                     </div>
                                 </div>
                                 <div class="table-responsive">
-                                    <table id="masterKaryawanTable" class="table table-vcenter table-striped">
+                                    <br>
+                                    <table id="setTable" class="table table-vcenter table-striped">
                                         <thead>
                                             <tr>
                                                 <th>No. </th>
@@ -319,7 +433,9 @@ defineOptions({
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                    <h5 class="modal-title">Tambah Master Karyawan</h5>
+                        <h5 class="modal-title">
+                            {{ isEdit ? 'Edit Master Karyawan' : 'Tambah Master Karyawan' }}
+                        </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -413,8 +529,8 @@ defineOptions({
                                     <label class="form-label">Status Kerja</label>
                                     <select v-model="form.status_kerja" class="form-select">
                                         <option value="" disabled>-Pilih Status Kerja-</option>
-                                        <option>TETAP</option>
-                                        <option>KONTRAK</option>
+                                        <option>AKTIF</option>
+                                        <option>NON AKTIF</option>
                                     </select>
                                 </div>
                             </div>
@@ -423,15 +539,15 @@ defineOptions({
                                     <label class="form-label">Status Karyawan</label>
                                     <select v-model="form.status_karyawan" class="form-select">
                                         <option value="" disabled>-Pilih Status Karyawan-</option>
-                                        <option>AKTIF</option>
-                                        <option>TIDAK AKTIF</option>
+                                        <option>TETAP</option>
+                                        <option>KONTRAK</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="mb-3">
                                     <label class="form-label">Jobclass</label>
-                                    <select v-model="form.jobclass" class="form-select">
+                                    <select v-model="form.job_class" class="form-select">
                                         <option value="" disabled>-Pilih Jobclass-</option>
                                         <option>A1</option>
                                         <option>A2</option>
@@ -486,7 +602,7 @@ defineOptions({
                         <button type="button" class="btn btn-warning" @click="resetForm">
                             Reset
                         </button>
-                        <a href="#" class="btn btn-primary btn-5 ms-auto" data-bs-dismiss="modal">
+                        <a href="#" class="btn btn-primary btn-5 ms-auto" @click="submitForm">
                             Simpan
                         </a>
                     </div>

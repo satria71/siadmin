@@ -17,16 +17,19 @@ class MasterKaryawanSeeder extends Seeder
             'nik_lama' => '',
             'nik' => '2015401125',
             'nama' => 'Satria',
-            'lokasi' => 'DCI',
+            'gudang' => 'DCI',
             'bagian' => 'Admin',
+            'kelas' => 'Senior',
             'jabatan' => 'SPV',
             'tipe' => 'NON Driver',
-            'jc' => 'B',
-            'status' => 'Kontrak',
+            'status_kerja' => 'Aktif',
+            'status_karyawan' => 'Tetap',
+            'job_class' => 'B',
             'tgl_efektif' => '2025-10-10',
             'tgl_tetap' => '2025-10-10',
             'tgl_keluar' => '2025-10-10',
-            'status_kerja' => 'Aktif',
+            'ket_masuk' => '',
+            'ket_keluar' => '',
         ]);
 
         

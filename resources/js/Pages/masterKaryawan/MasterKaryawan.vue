@@ -288,21 +288,21 @@ onMounted(() => {
                 router.delete(`/masterKaryawan/delete/${id}`, {
                     onSuccess: () => {
 
-                        // Swal.fire({
-                        //     icon: 'success',
-                        //     title: 'Berhasil',
-                        //     text: 'Data berhasil dihapus',
-                        //     timer: 1500,
-                        //     showConfirmButton: false
-                        // })
                         Swal.fire({
-                            toast: true,
-                            position: 'top-end',
                             icon: 'success',
-                            title: 'Data berhasil dihapus',
-                            showConfirmButton: false,
-                            timer: 2500
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                            timer: 1500,
+                            showConfirmButton: false
                         })
+                        // Swal.fire({
+                        //     toast: true,
+                        //     position: 'top-end',
+                        //     icon: 'success',
+                        //     title: 'Data berhasil dihapus',
+                        //     showConfirmButton: false,
+                        //     timer: 2500
+                        // })
 
                         $('#setTable').DataTable().ajax.reload()
                     }
@@ -325,27 +325,27 @@ const submitForm = () => {
     form[method](url, {
         onSuccess: () => {
             // SweetAlert
-            // Swal.fire({
-            //     icon: 'success',
-            //     title: 'Berhasil',
-            //     text: isEdit.value 
-            //         ? 'Data karyawan berhasil diperbarui'
-            //         : 'Data karyawan berhasil ditambahkan',
-            //     // timer: 2000,
-            //     showConfirmButton: true
-            // })
-
             Swal.fire({
-                toast: true,
-                position: 'top-end',
                 icon: 'success',
-                title: isEdit.value
-                    ? 'Data Karyawan diperbarui'
-                    : 'Data karyawan ditambahkan',
-                showConfirmButton: false,
-                timer: 2500,
-                timerProgressBar: true
+                title: 'Berhasil',
+                text: isEdit.value 
+                    ? 'Data karyawan berhasil diperbarui'
+                    : 'Data karyawan berhasil ditambahkan',
+                // timer: 2000,
+                showConfirmButton: true
             })
+
+            // Swal.fire({
+            //     toast: true,
+            //     position: 'top-end',
+            //     icon: 'success',
+            //     title: isEdit.value
+            //         ? 'Data Karyawan diperbarui'
+            //         : 'Data karyawan ditambahkan',
+            //     showConfirmButton: false,
+            //     timer: 2500,
+            //     timerProgressBar: true
+            // })
 
             form.reset()
 

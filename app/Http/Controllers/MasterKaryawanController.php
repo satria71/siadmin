@@ -81,30 +81,42 @@ class MasterKaryawanController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nik' => 'required',
-        'nama' => 'required',
-    ]);
+    {
+        // $request->validate([
+        //     'nik' => 'required',
+        //     'nama' => 'required',
+        // ]);
 
-    MasterKaryawan::create([
-        'nik' => $request->nik,
-        'nik_lama' => $request->nik_lama,
-        'nama' => $request->nama,
-        'gudang' => $request->gudang,
-        'bagian' => $request->bagian,
-        'kelas' => $request->kelas,
-        'jabatan' => $request->jabatan,
-        'tipe' => $request->tipe,
-        'status_kerja' => $request->status_kerja,
-        'status_karyawan' => $request->status_karyawan,
-        'job_class' => $request->job_class,
-        'tgl_efektif' => $request->tgl_efektif,
-        'tgl_tetap' => $request->tgl_tetap,
-        'tgl_keluar' => $request->tgl_keluar,
-        'ket_masuk' => $request->ket_masuk,
-        'ket_keluar' => $request->ket_keluar,
-    ]);
+        $validated = $request->validate([
+            'nik' => 'required|max:20|unique:master_karyawans,nik',
+            'nama' => 'required|max:100',
+            'gudang' => 'required',
+            'bagian' => 'required',
+            'kelas' => 'required',
+            'jabatan' => 'required',
+            'tipe' => 'required',
+            'status_kerja' => 'required',
+            'status_karyawan' => 'required',
+            'job_class' => 'required',
+            'tgl_efektif' => 'required|date',
+            'tgl_tetap' => 'nullable|date',
+            'tgl_keluar' => 'nullable|date',
+        ], [
+            'nik.required' => 'NIK wajib diisi',
+            'nik.unique' => 'NIK sudah terdaftar',
+            'nama.required' => 'Nama karyawan wajib diisi',
+            'gudang.required' => 'Gudang harus dipilih',
+            'bagian.required' => 'Bagian harus dipilih',
+            'kelas.required' => 'Kelas harus dipilih',
+            'jabatan.required' => 'Jabatan harus dipilih',
+            'status_kerja.required' => 'Status kerja harus dipilih',
+            'status_karyawan.required' => 'Status karyawan harus dipilih',
+            'tgl_efektif.required' => 'Tanggal efektif wajib diisi',
+            'job_class.required' => 'Job class wajib diisi',
+            'tipe.required' => 'Tipe wajib diisi'
+        ]);
+
+        MasterKaryawan::create($validated);
 
         return redirect()->back();
     }
@@ -113,7 +125,25 @@ class MasterKaryawanController extends Controller
     {
         $data = MasterKaryawan::findOrFail($id);
 
-        $data->update($request->all());
+        $validated = $request->validate([
+            'nik' => 'required|max:20|unique:master_karyawans,nik,' . $id,
+            'nama' => 'required|max:100',
+            'gudang' => 'required',
+            'bagian' => 'required',
+            'kelas' => 'required',
+            'jabatan' => 'required',
+            'tipe' => 'required',
+            'status_kerja' => 'required',
+            'status_karyawan' => 'required',
+            'job_class' => 'required',
+            'tgl_efektif' => 'required|date',
+            'tgl_tetap' => 'nullable|date',
+            'tgl_keluar' => 'nullable|date',
+        ]);
+
+        // $data->update($request->all());
+
+        $data->update($validated);
 
         return redirect()->back();
     }

@@ -10,6 +10,9 @@ import { onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useForm } from '@inertiajs/vue3'
 import Breadcrumb from '@/Components/Breadcrumb.vue'
+import FormInput from '@/Components/FormInput.vue'
+import FormSelect from '@/Components/FormSelect.vue'
+import FormTextarea from '@/Components/FormTextarea.vue'
 import Swal from 'sweetalert2'
 
 const isEdit = ref(false)
@@ -70,6 +73,26 @@ watch(() => form.bagian, () => {
     }
 
 })
+
+//error hilang saat user mengetik
+const clearErrorOnInput = (field) => {
+    watch(() => form[field], () => {
+        form.clearErrors(field)
+    })
+}
+
+clearErrorOnInput('nik')
+clearErrorOnInput('nama')
+clearErrorOnInput('gudang')
+clearErrorOnInput('bagian')
+clearErrorOnInput('kelas')
+clearErrorOnInput('jabatan')
+clearErrorOnInput('tipe')
+clearErrorOnInput('status_kerja')
+clearErrorOnInput('status_karyawan')
+clearErrorOnInput('tgl_efektif')
+clearErrorOnInput('job_class')
+
 
 //Reset form
 const resetForm = () => {
@@ -354,6 +377,23 @@ const submitForm = () => {
             const modalEl = document.getElementById('modal-report')
             const modal = Modal.getInstance(modalEl)
             modal.hide()
+        },
+        onError: (errors) => {
+
+            const firstError = Object.keys(errors)[0]
+
+            const el = document.querySelector(`[name="${firstError}"]`)
+
+            if (el) {
+                el.focus()
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Form belum lengkap',
+                text: 'Periksa kembali data yang wajib diisi'
+            })
         }
     })
 }
@@ -442,66 +482,52 @@ defineOptions({
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-3">
-                                    <label class="form-label">NIK</label>
-                                    <input type="text" v-model="form.nik" class="form-control" placeholder="Masukkan NIK">
+                                    <!-- <label class="form-label">NIK</label>
+                                    <input type="text" name="nik" v-model="form.nik" class="form-control" :class="{ 'is-invalid': form.errors.nik }" placeholder="Masukkan NIK">
+                                    <div v-if="form.errors.nik" class="invalid-feedback">
+                                        {{ form.errors.nik }}
+                                    </div> -->
+                                    <FormInput label="NIK" name="nik" v-model="form.nik" :error="form.errors.nik" placeholder="Masukkan NIK"/>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="mb-3">
-                                    <label class="form-label">NIK Lama</label>
-                                    <input type="text" v-model="form.nik_lama"class="form-control" placeholder="Masukkan NIK Lama">
+                                    <FormInput label="NIK Lama" name="nik_lama" v-model="form.nik_lama" :error="form.errors.nik_lama" placeholder="Masukkan NIK Lama"/>
                                 </div>
                             </div>
                             <div class="col-lg-8">
                                 <div class="mb-3">
-                                    <label class="form-label">Nama</label>
-                                    <input type="text" v-model="form.nama" class="form-control" placeholder="Masukkan nama karyawan">
+                                    <FormInput label="Nama" name="nama" v-model="form.nama" :error="form.errors.nama" placeholder="Masukkan Nama"/>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Gudang</label>
-                                    <select v-model="form.gudang" class="form-select">
-                                        <option value="" disabled>-Pilih Gudang-</option>
-                                        <option value="DCI">DCI</option>
-                                        <option value="DEPO 1">DEPO 1</option>
-                                        <option value="DEPO 2">DEPO 2</option>
-                                    </select>
+                                    <FormSelect label="Gudang" name="gudang" v-model="form.gudang" :options="['DCI','DEPO 1','DEPO 2']" :error="form.errors.gudang" placeholder="-Pilih Gudang-"/>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Bagian</label>
-                                    <select v-model="form.bagian" class="form-select">
-                                        <option value="" disabled>-Pilih Bagian-</option>
-                                        <option value="ADMIN">ADMIN</option>
-                                        <option value="RECEIVING">RECEIVING</option>
-                                        <option value="RETUR">RETUR</option>
-                                        <option value="PERISHABLE">PERISHABLE</option>
-                                        <option value="WAREHOUSE">WAREHOUSE</option>
-                                        <option value="WAREHOUSEKLIK">WAREHOUSE KLIK</option>
-                                        <option value="ISSUINGDELVIERY">ISSUING DELIVERY</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Bagian" name="bagian" v-model="form.bagian" 
+                                    :options="['ADMIN','RECEIVING','RETUR','RETUR','PERISHABLE','WAREHOUSE','WAREHOUSEKLIK','ISSUING DELIVERY']" 
+                                    :error="form.errors.bagian" placeholder="-Pilih Bagian-"/>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Kelas</label>
-                                    <select v-model="form.kelas" class="form-select">
-                                        <option value="" disabled>-Pilih Kelas-</option>
-                                        <option value="SUPERVISOR">SUPERVISOR</option>
-                                        <option value="SR. CLERK">SR. CLERK</option>
-                                        <option value="CLERK">CLERK</option>
-                                        <option value="COORDINATOR">COORDINATOR</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Kelas" name="kelas" v-model="form.kelas" 
+                                    :options="['SUPERVISOR','SR. CLERK','CLERK','COORDINATOR']" 
+                                    :error="form.errors.kelas" placeholder="-Pilih Kelas-"/>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
                                     <label class="form-label">Jabatan</label>
-                                    <select v-model="form.jabatan"
+                                    <select name="jabatan" v-model="form.jabatan"
                                         class="form-select"
-                                        :disabled="form.bagian === ''">
+                                        :disabled="form.bagian === ''"
+                                        :class="{ 'is-invalid': form.errors.jabatan }">
 
                                         <option value="" disabled>-Pilih Jabatan-</option>
 
@@ -511,60 +537,48 @@ defineOptions({
                                             :value="item">
                                             {{ item }}
                                         </option>
+                                        
                                     </select>
+                                    <div v-if="form.errors.jabatan" class="invalid-feedback">
+                                        {{ form.errors.jabatan }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Tipe</label>
-                                    <select v-model="form.tipe" class="form-select">
-                                        <option value="" disabled>-Pilih Tipe-</option>
-                                        <option>DRIVER</option>
-                                        <option>NON DRIVER</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Tipe" name="tipe" v-model="form.tipe" 
+                                    :options="['DRIVER','NON DRIVER']" 
+                                    :error="form.errors.tipe" placeholder="-Pilih Tipe-"/>
                                 </div>
                             </div>
                             <div class="col-lg-5">
                                 <div class="mb-3">
-                                    <label class="form-label">Status Kerja</label>
-                                    <select v-model="form.status_kerja" class="form-select">
-                                        <option value="" disabled>-Pilih Status Kerja-</option>
-                                        <option>AKTIF</option>
-                                        <option>NON AKTIF</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Status Kerja" name="status_kerja" v-model="form.status_kerja" 
+                                    :options="['AKTIF','NON AKTIF']" 
+                                    :error="form.errors.status_kerja" placeholder="-Pilih Status Kerja-"/>
                                 </div>
                             </div>
                             <div class="col-lg-5">
                                 <div class="mb-3">
-                                    <label class="form-label">Status Karyawan</label>
-                                    <select v-model="form.status_karyawan" class="form-select">
-                                        <option value="" disabled>-Pilih Status Karyawan-</option>
-                                        <option>TETAP</option>
-                                        <option>KONTRAK</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Status Karyawan" name="status_karyawan" v-model="form.status_karyawan" 
+                                    :options="['TETAP','KONTRAK']" 
+                                    :error="form.errors.status_karyawan" placeholder="-Pilih Status Karyawan-"/>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="mb-3">
-                                    <label class="form-label">Jobclass</label>
-                                    <select v-model="form.job_class" class="form-select">
-                                        <option value="" disabled>-Pilih Jobclass-</option>
-                                        <option>A1</option>
-                                        <option>A2</option>
-                                        <option>A3</option>
-                                        <option>B1</option>
-                                        <option>B2</option>
-                                        <option>B3</option>
-                                        <option>C1</option>
-                                        <option>C2</option>
-                                        <option>C3</option>
-                                    </select>
+                                    <FormSelect 
+                                    label="Job Class" name="job_class" v-model="form.job_class" 
+                                    :options="['A1','A2','A3','B1','B2','B3','C1','C2','C3']" 
+                                    :error="form.errors.job_class" placeholder="-Pilih JC-"/>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Tanggal Efektif</label>
-                                    <input type="date" v-model="form.tgl_efektif" class="form-control">
+                                    <FormInput label="Tanggal Efektif" name="tgl_efektif" type="date" v-model="form.tgl_efektif" :error="form.errors.tgl_efektif"/>
                                 </div>
                             </div>
                             <div class="col-lg-4">
@@ -585,8 +599,9 @@ defineOptions({
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Keterangan Masuk</label>
-                                <textarea v-model="form.ket_masuk" class="form-control" rows="3"></textarea>
+                                    <!-- <label class="form-label">Keterangan Masuk</label>
+                                    <textarea v-model="form.ket_masuk" class="form-control" rows="3"></textarea> -->
+                                    <FormTextarea label="Keterangan Masuk" name="ket_masuk" v-model="form.ket_masuk" :error="form.errors.ket_masuk" placeholder="Masukkan keterangan"/>
                                 </div>
                             </div>
                             <div class="col-lg-6">

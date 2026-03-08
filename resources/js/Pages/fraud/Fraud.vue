@@ -2,9 +2,32 @@
 import Layout from '../../Layout.vue'
 import { useDataTable } from '@/Composables/useDataTable'
 import { Head } from '@inertiajs/vue3'
-import { computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { Modal } from 'bootstrap'
+import Breadcrumb from '@/Components/Breadcrumb.vue'
+import FormInput from '@/Components/FormInput.vue'
+import FormSelect from '@/Components/FormSelect.vue'
+import FormTextarea from '@/Components/FormTextarea.vue'
+import Swal from 'sweetalert2'
+import { ref, computed, watch, onMounted } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
+import axios from 'axios'
+
+const selectedIndex = ref(-1)
+const loadingSearch = ref(false)
+let searchTimeout = null
+
+const suggestions = ref([])
+const showSuggestions = ref(false)
+
+const isEdit = ref(false)
+const selectedId = ref(null)
+
+const breadcrumbs = [
+  { label: 'Dashboard', url: '/panel' },
+  { label: 'Data Fraud', url: 'fraud' },
+]
 
 const showModal = () => {
     const modal = new Modal(document.getElementById('modal-report'))
@@ -13,13 +36,118 @@ const showModal = () => {
 
 const user = computed(() => usePage().props.auth.user)
 
-defineOptions({
-  layout: Layout
+//reset
+const form = useForm({
+    nik: '',
+    nama: '',
+    tgl: '',
+    fraud: '',
 })
 
-defineProps({ user: Object })
+watch(() => form.nik, (nik) => {
+    searchKaryawan()
+})
 
-useDataTable(
+const pilihKaryawan = (item) => {
+
+    form.nik = item.nik
+    form.nama = item.nama
+
+    showSuggestions.value = false
+}
+
+const searchKaryawan = () => {
+
+    clearTimeout(searchTimeout)
+
+    searchTimeout = setTimeout(async () => {
+
+        if (!form.nik || form.nik.length < 2) {
+            suggestions.value = []
+            showSuggestions.value = false
+            return
+        }
+
+        loadingSearch.value = true
+
+        try {
+
+            const response = await axios.get('/fraud/search', {
+                params: { q: form.nik }
+            })
+
+            suggestions.value = response.data
+            showSuggestions.value = true
+            selectedIndex.value = -1
+
+        } finally {
+            loadingSearch.value = false
+        }
+
+    }, 300)
+
+}
+
+const handleKeydown = (e) => {
+
+    if (!showSuggestions.value) return
+
+    if (e.key === "ArrowDown") {
+        e.preventDefault()
+        selectedIndex.value++
+        if (selectedIndex.value >= suggestions.value.length) {
+            selectedIndex.value = 0
+        }
+    }
+
+    if (e.key === "ArrowUp") {
+        e.preventDefault()
+        selectedIndex.value--
+        if (selectedIndex.value < 0) {
+            selectedIndex.value = suggestions.value.length - 1
+        }
+    }
+
+    if (e.key === "Enter") {
+        e.preventDefault()
+        if (selectedIndex.value >= 0) {
+            pilihKaryawan(suggestions.value[selectedIndex.value])
+        }
+    }
+
+}
+
+
+//error hilang saat user mengetik
+const clearErrorOnInput = (field) => {
+    watch(() => form[field], () => {
+        form.clearErrors(field)
+    })
+}
+
+clearErrorOnInput('nik')
+clearErrorOnInput('tgl')
+clearErrorOnInput('fraud')
+
+//Reset form
+const resetForm = () => {
+    form.reset()
+    form.clearErrors()
+    isEdit.value = false
+    selectedId.value = null
+}
+
+const fillForm = (row) => {
+
+    Object.assign(form, row)
+
+    selectedId.value = row.id
+    isEdit.value = true
+
+    showModal()
+}
+
+const { getTable } = useDataTable(
     'setTable',
     '/fraud/data',
 
@@ -47,6 +175,7 @@ useDataTable(
                 }
             },
             { data: 'nik', name: 'nik' },
+            { data: 'nama', name: 'nama' },
             { data: 'fraud', name: 'fraud' },
             {
                 data: 'id',
@@ -55,11 +184,14 @@ useDataTable(
                 searchable: false,
                 render: function (data, type, row) {
                     return `
+                        <button class="btn btn-info btn-sm detail-btn" data-id="${data}">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
                         <button class="btn btn-warning btn-sm edit-btn" data-id="${data}">
-                            <i class="fa-solid fa-pen-to-square"> </i> Edit
+                            <i class="fa-solid fa-pen-to-square"> </i>
                         </button>
                         <button class="btn btn-danger btn-sm delete-btn" data-id="${data}">
-                            <i class="fa-solid fa-trash"></i> Hapus
+                            <i class="fa-solid fa-trash"></i>
                         </button>
                     `;
                 }
@@ -88,17 +220,208 @@ useDataTable(
         buttons: [
             {
                 extend: 'excel',
-                text: 'Export Excel',
-                className: 'btn btn-success btn-sm'
+                text: `
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                        width="18" height="18" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        class="me-1">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M4 15l4 6" />
+                        <path d="M4 21l4 -6" />
+                        <path d="M17 20.25c0 .414 .336 .75 .75 .75h1.25a1 1 0 0 0 1 -1v-1a1 1 0 0 0 -1 -1h-1a1 1 0 0 1 -1 -1v-1a1 1 0 0 1 1 -1h1.25a.75 .75 0 0 1 .75 .75" />
+                        <path d="M11 15v6h3" />
+                    </svg>
+                `,
+                className: 'btn btn-success text-white btn-sm d-inline-flex align-items-center gap-1'
             },
             {
                 extend: 'pdf',
-                text: 'Export PDF',
-                className: 'btn btn-danger btn-sm'
+                text: `
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        width="18" height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="me-1">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                        <path d="M5 12v-7a2 2 0 0 1 2 -2h7l5 5v4" />
+                        <path d="M5 18h1.5a1.5 1.5 0 0 0 0 -3h-1.5v6" />
+                        <path d="M17 18h2" />
+                        <path d="M20 15h-3v6" />
+                        <path d="M11 15v6h1a2 2 0 0 0 2 -2v-2a2 2 0 0 0 -2 -2h-1" />
+                    </svg>
+                `,
+                // className: 'btn btn-danger btn-sm'
+                className: 'btn btn-danger text-white btn-sm d-inline-flex align-items-center gap-1'
             }
         ]
     },
 )
+
+onMounted(() => {
+
+    const modalEl = document.getElementById('modal-report')
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        resetForm()
+    })
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            showSuggestions.value = false
+        }
+    })
+
+    // DETAIL BUTTON
+    $('#setTable tbody').on('click', '.detail-btn', function () {
+
+        const id = $(this).data('id')
+
+        if (!id) return
+
+        router.visit(`/fraud/${id}`)
+    })
+
+    // EDIT BUTTON
+    $('#setTable tbody').on('click', '.edit-btn', function () {
+
+        const table = getTable()
+        if (!table) return
+
+        const rowData = table.row($(this).closest('tr')).data()
+        if (!rowData) return
+
+        fillForm(rowData)
+
+    })
+
+    // HAPUS BUTTON
+    $('#setTable tbody').on('click', '.delete-btn', function () {
+
+    const id = $(this).data('id')
+
+        Swal.fire({
+            title: 'Yakin hapus data?',
+            text: "Data tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                router.delete(`/fraud/delete/${id}`, {
+                    onSuccess: () => {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                            timer: 1500,
+                            showConfirmButton: false
+                        })
+                        // Swal.fire({
+                        //     toast: true,
+                        //     position: 'top-end',
+                        //     icon: 'success',
+                        //     title: 'Data berhasil dihapus',
+                        //     showConfirmButton: false,
+                        //     timer: 2500
+                        // })
+
+                        $('#setTable').DataTable().ajax.reload()
+                    }
+                })
+
+            }
+
+        })
+    })
+})
+
+const submitForm = () => {
+
+    const url = isEdit.value
+        ? `/fraud/update/${selectedId.value}`
+        : '/fraud/store'
+
+    const method = isEdit.value ? 'put' : 'post'
+
+    form[method](url, {
+        onSuccess: () => {
+            // SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: isEdit.value 
+                    ? 'Data karyawan berhasil diperbarui'
+                    : 'Data karyawan berhasil ditambahkan',
+                // timer: 2000,
+                showConfirmButton: true
+            })
+
+            // Swal.fire({
+            //     toast: true,
+            //     position: 'top-end',
+            //     icon: 'success',
+            //     title: isEdit.value
+            //         ? 'Data Karyawan diperbarui'
+            //         : 'Data karyawan ditambahkan',
+            //     showConfirmButton: false,
+            //     timer: 2500,
+            //     timerProgressBar: true
+            // })
+
+            form.reset()
+
+            $('#setTable').DataTable().ajax.reload()
+
+            const modalEl = document.getElementById('modal-report')
+            const modal = Modal.getInstance(modalEl)
+            modal.hide()
+        },
+        onError: (errors) => {
+
+            const firstError = Object.keys(errors)[0]
+
+            const el = document.querySelector(`[name="${firstError}"]`)
+
+            if (el) {
+                el.focus()
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Form belum lengkap',
+                text: 'Periksa kembali data yang wajib diisi'
+            })
+        }
+    })
+}
+
+defineOptions({
+  layout: Layout
+})
+
+defineProps({
+    auth: Object,
+    errors: Object
+})
 
 </script>
 
@@ -117,12 +440,15 @@ useDataTable(
                     <!-- Page title actions -->
                     <div class="col-auto ms-auto d-print-none">
                         <div class="btn-list">
-                            <a href="#" class="btn btn-primary btn-5 d-none d-sm-inline-block"
+                            <a href="#" class="btn btn-sm btn-primary btn-5 d-none d-sm-inline-block"
                             @click.prevent="showModal">
                             <i class="fa-solid fa-plus"> </i> Buat Baru
                             </a>
                         </div>
                     </div>
+                </div>
+                <div class="col-auto"><br>
+                    <Breadcrumb :items="breadcrumbs" />
                 </div>
             </div>
         </div>
@@ -146,6 +472,7 @@ useDataTable(
                                             <th>No. </th>
                                             <th>Tanggal</th>
                                             <th>NIK</th>
+                                            <th>Nama</th>
                                             <th>Fraud</th>
                                             <th>Action</th>
                                         </tr>
@@ -163,99 +490,71 @@ useDataTable(
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title">Fraud Admin</h5>
+                    <h5 class="modal-title">
+                        {{ isEdit ? 'Edit Data Fraud' : 'Tambah Data Fraud' }}
+                    </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Name</label>
-                    <input type="text" class="form-control" name="example-text-input" placeholder="Your report name">
-                </div>
-                <label class="form-label">Report type</label>
-                <div class="form-selectgroup-boxes row mb-3">
-                    <div class="col-lg-6">
-                    <label class="form-selectgroup-item">
-                        <input type="radio" name="report-type" value="1" class="form-selectgroup-input" checked="">
-                        <span class="form-selectgroup-label d-flex align-items-center p-3">
-                        <span class="me-3">
-                            <span class="form-selectgroup-check"></span>
-                        </span>
-                        <span class="form-selectgroup-label-content">
-                            <span class="form-selectgroup-title strong mb-1">Simple</span>
-                            <span class="d-block text-secondary">Provide only basic data needed for the report</span>
-                        </span>
-                        </span>
-                    </label>
-                    </div>
-                    <div class="col-lg-6">
-                    <label class="form-selectgroup-item">
-                        <input type="radio" name="report-type" value="1" class="form-selectgroup-input">
-                        <span class="form-selectgroup-label d-flex align-items-center p-3">
-                        <span class="me-3">
-                            <span class="form-selectgroup-check"></span>
-                        </span>
-                        <span class="form-selectgroup-label-content">
-                            <span class="form-selectgroup-title strong mb-1">Advanced</span>
-                            <span class="d-block text-secondary">Insert charts and additional advanced analyses to be inserted in the report</span>
-                        </span>
-                        </span>
-                    </label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-8">
-                    <div class="mb-3">
-                        <label class="form-label">Report url</label>
-                        <div class="input-group input-group-flat">
-                        <span class="input-group-text"> https://tabler.io/reports/ </span>
-                        <input type="text" class="form-control ps-0" value="report-01" autocomplete="off">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-6 position-relative autocomplete-wrapper">
+                                <FormInput label="NIK" name="nik" v-model="form.nik" :error="form.errors.nik" @keydown="handleKeydown"/>
+                                <ul
+                                    v-if="showSuggestions && suggestions.length"
+                                    class="list-group position-absolute w-100 shadow"
+                                    style="
+                                        z-index:1055;
+                                        background:#ffffff;
+                                        border:1px solid #dee2e6;
+                                        max-height:200px;
+                                        overflow-y:auto;
+                                    "
+                                >
+                                    <li v-if="loadingSearch" class="list-group-item text-muted">
+                                        Searching...
+                                    </li>
+                                    <li
+                                        v-for="item in suggestions"
+                                        :key="item.nik"
+                                        class="list-group-item list-group-item-action"
+                                        @click="pilihKaryawan(item)"
+                                    >
+                                        {{ item.nik }} - {{ item.nama }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-6">
+                                <FormInput label="Nama" name="nama" v-model="form.nama" readonly/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-6">
+                                <label class="form-label">Tanggal</label>
+                                <input type="date" class="form-control" name="example-text-input" placeholder="Your report name">
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-6">
+                                <FormTextarea label="Fraud" name="fraud" v-model="form.fraud" :error="form.errors.fraud" placeholder="Masukkan kronologi fraud"/>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-label">Custom File Input</div>
+                            <input type="file" class="form-control">
                         </div>
                     </div>
-                    </div>
-                    <div class="col-lg-4">
-                    <div class="mb-3">
-                        <label class="form-label">Visibility</label>
-                        <select class="form-select">
-                        <option value="1" selected="">Private</option>
-                        <option value="2">Public</option>
-                        <option value="3">Hidden</option>
-                        </select>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                <div class="modal-body">
-                <div class="row">
-                    <div class="col-lg-6">
-                    <div class="mb-3">
-                        <label class="form-label">Client name</label>
-                        <input type="text" class="form-control">
-                    </div>
-                    </div>
-                    <div class="col-lg-6">
-                    <div class="mb-3">
-                        <label class="form-label">Reporting period</label>
-                        <input type="date" class="form-control">
-                    </div>
-                    </div>
-                    <div class="col-lg-12">
-                    <div>
-                        <label class="form-label">Additional information</label>
-                        <textarea class="form-control" rows="3"></textarea>
-                    </div>
-                    </div>
-                </div>
                 </div>
                 <div class="modal-footer">
-                <a href="#" class="btn btn-link link-secondary btn-3" data-bs-dismiss="modal"> Cancel </a>
-                <a href="#" class="btn btn-primary btn-5 ms-auto" data-bs-dismiss="modal">
-                    <!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-2">
-                    <path d="M12 5l0 14"></path>
-                    <path d="M5 12l14 0"></path>
-                    </svg>
-                    Create new report
-                </a>
+                    <a href="#" class="btn btn-link link-secondary btn-3" data-bs-dismiss="modal" @click="resetForm"> Cancel </a>
+                    <button type="button" class="btn btn-warning" @click="resetForm">
+                        Reset
+                    </button>
+                    <a href="#" class="btn btn-primary btn-5 ms-auto" @click="submitForm">
+                        Simpan
+                    </a>
                 </div>
             </div>
             </div>

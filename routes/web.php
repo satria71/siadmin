@@ -43,22 +43,24 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     //     return Inertia::render('SerahTerima');
     // })->name('serahterima');
 
-    Route::get('/serahterima', [SerahTerimaController::class, 'index'])
-    ->name('serahterima');
+    Route::get('/serahterima', [SerahTerimaController::class, 'index'])->name('serahterima');
 
     // Route::get('/register', function () {
     //     return Inertia::render('auth/Register');
     // })->name('register');
 
     //Register
-    Route::get('/register', [AuthController::class, 'viewregister'])
-    ->name('register');
+    Route::get('/register', [AuthController::class, 'viewregister'])->name('register');
     Route::post('/register', [AuthController::class, 'prosesregister']);
 
     //Fraud
-    Route::get('/fraud', [FraudController::class, 'index'])
-    ->name('fraud');
+    Route::get('/fraud', [FraudController::class, 'index'])->name('fraud');
     Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
+    Route::post('/fraud/store', [FraudController::class, 'store']);
+    Route::put('/fraud/update/{id}', [FraudController::class, 'update']);
+    Route::delete('/fraud/delete/{id}', [FraudController::class, 'delete']);
+    Route::get('/fraud/by-nik/{nik}', [FraudController::class, 'getByNik']);
+    Route::get('/fraud/search', [FraudController::class, 'search']);
 
     //Master Karyawan
     Route::get('/masterKaryawan', [MasterKaryawanController::class, 'index'])->name('masterKaryawan');

@@ -509,7 +509,7 @@ defineOptions({
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Bagian" name="bagian" v-model="form.bagian" 
-                                    :options="['ADMIN','RECEIVING','RETUR','RETUR','PERISHABLE','WAREHOUSE','WAREHOUSEKLIK','ISSUING DELIVERY']" 
+                                    :options="['ADMIN','RECEIVING','RETUR','PERISHABLE','WAREHOUSE','WAREHOUSEKLIK','ISSUING DELIVERY']" 
                                     :error="form.errors.bagian" placeholder="-Pilih Bagian-"/>
                                 </div>
                             </div>

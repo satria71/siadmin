@@ -38,6 +38,7 @@ const form = useForm({
     bagian: '',
     kelas: '',
     jabatan: '',
+    jabatan_ho: '',
     tipe: '',
     status_kerja: '',
     status_karyawan: '',
@@ -61,8 +62,36 @@ const daftarJabatan = {
     WAREHOUSEKLIK: ['KLIK INDOMARET', 'PICKER', 'SCANNER']
 }
 
+const daftarJabatanHo = {
+    ADMINISTRATION: ['PHARMACIST', 'BPB SUPPLIER & NPB STORE', 'INVENTORY', 'TECHNICAL SUPPORT', 'CCTV' ],
+    RECEIVING: ['SUPPLIER'],
+    RETUR: ['RETUR TOKO IDM', 'SARANA DCI', 'RETUR SUPPLIER', 'ADM RETUR'],
+    PERISHABLE: ['FRUIT AND CHILLED FOOD', 'SPECIAL PRODUCTS', 'BAKERY'],
+    WAREHOUSE: ['FRACTION', 'BULKY', 'OTHERS', 'RENTAL WAREHOUSE', 'PICKER', 'SCANNER', 'HELPER', 'SECOND CHECKER', 'COURIER COORDINATOR', 'FACILITIES COORDINATOR', 'UTILITY OPERATOR', 'STOCK OPNAME'],
+    ISSUINGDELVIERY: ['HELPER', 'LOADING', 'ADM DELIVERY', 'CHIEF DRIVER', 'DELIVERY SUPPORT', 'GPS', 'DRIVER DRY', 'DRIVER NON DRY'],
+    WAREHOUSEKLIK: ['KLIK INDOMARET', 'PICKER', 'SCANNER']
+}
+
+const daftarKelas = {
+    ADMINISTRATION: ['SUPERVISOR','SR. CLERK','CLERK'],
+    RECEIVING: ['SUPERVISOR','CHECKER','HELPER'],
+    RETUR: ['SUPERVISOR','CLERK','HELPER'],
+    PERISHABLE: ['SUPERVISOR','CHECKER','HELPER'],
+    WAREHOUSE: ['SUPERVISOR','COORDINATOR','CHECKER','HELPER'],
+    ISSUINGDELIVERY: ['SUPERVISOR','COORDINATOR','DRIVER','HELPER'],
+    WAREHOUSEKLIK: ['SUPERVISOR','CHECKER','HELPER']
+}
+
 const jabatanOptions = computed(() => {
     return daftarJabatan[form.bagian] || []
+})
+
+const kelasOptions = computed(() => {
+    return daftarKelas[form.bagian] || []
+})
+
+const jabatanHoOptions = computed(() => {
+    return daftarJabatanHo[form.bagian] || []
 })
 
 //Reset jabatan saat bagian berubah
@@ -70,6 +99,8 @@ watch(() => form.bagian, () => {
 
     if (!isEdit.value) {
         form.jabatan = ''
+        form.kelas = ''
+        form.jabatan_ho = ''
     }
 
 })
@@ -87,6 +118,7 @@ clearErrorOnInput('gudang')
 clearErrorOnInput('bagian')
 clearErrorOnInput('kelas')
 clearErrorOnInput('jabatan')
+clearErrorOnInput('jabatan_ho')
 clearErrorOnInput('tipe')
 clearErrorOnInput('status_kerja')
 clearErrorOnInput('status_karyawan')
@@ -515,15 +547,31 @@ defineOptions({
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
-                                    <FormSelect 
-                                    label="Kelas" name="kelas" v-model="form.kelas" 
-                                    :options="['SUPERVISOR','SR. CLERK','CLERK','COORDINATOR','CHECKER','HELPER','DRIVER']" 
-                                    :error="form.errors.kelas" placeholder="-Pilih Kelas-"/>
+                                <label class="form-label">Kelas</label>
+                                    <select
+                                        name="kelas"
+                                        v-model="form.kelas"
+                                        class="form-select"
+                                        :disabled="form.bagian === ''"
+                                        :class="{ 'is-invalid': form.errors.kelas }">
+
+                                        <option value="" disabled>-Pilih Kelas-</option>
+
+                                        <option 
+                                            v-for="item in kelasOptions"
+                                            :key="item"
+                                            :value="item">
+                                            {{ item }}
+                                        </option>
+                                        <div v-if="form.errors.kelas" class="invalid-feedback">
+                                            {{ form.errors.kelas }}
+                                        </div>
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Jabatan</label>
+                                    <label class="form-label">Jabatan DC</label>
                                     <select name="jabatan" v-model="form.jabatan"
                                         class="form-select"
                                         :disabled="form.bagian === ''"
@@ -546,13 +594,36 @@ defineOptions({
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
+                                    <label class="form-label">Jabatan HO</label>
+                                    <select name="jabatan" v-model="form.jabatan_ho"
+                                        class="form-select"
+                                        :disabled="form.bagian === ''"
+                                        :class="{ 'is-invalid': form.errors.jabatan_ho }">
+
+                                        <option value="" disabled>-Pilih Jabatan-</option>
+
+                                        <option 
+                                            v-for="item in jabatanHoOptions" 
+                                            :key="item" 
+                                            :value="item">
+                                            {{ item }}
+                                        </option>
+                                        
+                                    </select>
+                                    <div v-if="form.errors.jabatan_ho" class="invalid-feedback">
+                                        {{ form.errors.jabatan_ho }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="mb-3">
                                     <FormSelect 
                                     label="Tipe" name="tipe" v-model="form.tipe" 
                                     :options="['DRIVER','NON DRIVER']" 
                                     :error="form.errors.tipe" placeholder="-Pilih Tipe-"/>
                                 </div>
                             </div>
-                            <div class="col-lg-5">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Status Kerja" name="status_kerja" v-model="form.status_kerja" 
@@ -560,7 +631,7 @@ defineOptions({
                                     :error="form.errors.status_kerja" placeholder="-Pilih Status Kerja-"/>
                                 </div>
                             </div>
-                            <div class="col-lg-5">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Status Karyawan" name="status_karyawan" v-model="form.status_karyawan" 

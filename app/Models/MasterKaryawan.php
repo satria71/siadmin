@@ -16,6 +16,7 @@ class MasterKaryawan extends Model
         'bagian',
         'kelas',
         'jabatan',
+        'jabatan_ho',
         'tipe',
         'status_kerja',
         'status_karyawan',

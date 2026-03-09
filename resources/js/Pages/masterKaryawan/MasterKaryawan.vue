@@ -517,7 +517,7 @@ defineOptions({
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Kelas" name="kelas" v-model="form.kelas" 
-                                    :options="['SUPERVISOR','SR. CLERK','CLERK','COORDINATOR']" 
+                                    :options="['SUPERVISOR','SR. CLERK','CLERK','COORDINATOR','CHECKER','HELPER','DRIVER']" 
                                     :error="form.errors.kelas" placeholder="-Pilih Kelas-"/>
                                 </div>
                             </div>

@@ -52,7 +52,7 @@ const form = useForm({
 // const form = ref({ ...initialForm })
 
 const daftarJabatan = {
-    ADMIN: ['PHARMACIST', 'BPB SUPPLIER & NPB STORE', 'INVENTORY', 'TECHNICAL SUPPORT', 'CCTV' ],
+    ADMINISTRATION: ['PHARMACIST', 'BPB SUPPLIER & NPB STORE', 'INVENTORY', 'TECHNICAL SUPPORT', 'CCTV' ],
     RECEIVING: ['SUPPLIER'],
     RETUR: ['RETUR TOKO IDM', 'SARANA DCI', 'RETUR SUPPLIER', 'ADM RETUR'],
     PERISHABLE: ['FRUIT AND CHILLED FOOD', 'SPECIAL PRODUCTS', 'BAKERY'],
@@ -509,7 +509,7 @@ defineOptions({
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Bagian" name="bagian" v-model="form.bagian" 
-                                    :options="['ADMINISTRATION','RECEIVING','RETUR','PERISHABLE','WAREHOUSE DRY','WAREHOUSE KLIK','ISSUING & DELIVERY']" 
+                                    :options="['ADMINISTRATION','RECEIVING','RETUR','PERISHABLE','WAREHOUSE','WAREHOUSEKLIK','ISSUINGDELIVERY']" 
                                     :error="form.errors.bagian" placeholder="-Pilih Bagian-"/>
                                 </div>
                             </div>

@@ -502,14 +502,14 @@ defineOptions({
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <FormSelect label="Gudang" name="gudang" v-model="form.gudang" :options="['DCI','DEPO 1','DEPO 2']" :error="form.errors.gudang" placeholder="-Pilih Gudang-"/>
+                                    <FormSelect label="Gudang" name="gudang" v-model="form.gudang" :options="['DCI','DEPO 1','DEPO 2','WHK']" :error="form.errors.gudang" placeholder="-Pilih Gudang-"/>
                                 </div>
                             </div>
                             <div class="col-lg-3">
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Bagian" name="bagian" v-model="form.bagian" 
-                                    :options="['ADMIN','RECEIVING','RETUR','PERISHABLE','WAREHOUSE','WAREHOUSEKLIK','ISSUING DELIVERY']" 
+                                    :options="['ADMINISTRATION','RECEIVING','RETUR','PERISHABLE','WAREHOUSE DRY','WAREHOUSE KLIK','ISSUING & DELIVERY']" 
                                     :error="form.errors.bagian" placeholder="-Pilih Bagian-"/>
                                 </div>
                             </div>

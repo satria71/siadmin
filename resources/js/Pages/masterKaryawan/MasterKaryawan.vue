@@ -63,12 +63,12 @@ const daftarJabatan = {
 }
 
 const daftarJabatanHo = {
-    ADMINISTRATION: ['PHARMACIST', 'BPB SUPPLIER & NPB STORE', 'INVENTORY', 'TECHNICAL SUPPORT', 'CCTV' ],
-    RECEIVING: ['SUPPLIER'],
-    RETUR: ['RETUR TOKO IDM', 'SARANA DCI', 'RETUR SUPPLIER', 'ADM RETUR'],
-    PERISHABLE: ['FRUIT AND CHILLED FOOD', 'SPECIAL PRODUCTS', 'BAKERY'],
-    WAREHOUSE: ['FRACTION', 'BULKY', 'OTHERS', 'RENTAL WAREHOUSE', 'PICKER', 'SCANNER', 'HELPER', 'SECOND CHECKER', 'COURIER COORDINATOR', 'FACILITIES COORDINATOR', 'UTILITY OPERATOR', 'STOCK OPNAME'],
-    ISSUINGDELVIERY: ['HELPER', 'LOADING', 'ADM DELIVERY', 'CHIEF DRIVER', 'DELIVERY SUPPORT', 'GPS', 'DRIVER DRY', 'DRIVER NON DRY'],
+    ADMINISTRATION: ['ADMINISTRATION CLERK', 'ADMINISTRATION CLERK BPB SUPPLIER & NPB STORE', 'ADMINISTRATION CLERK CCTV', 'ADMINISTRATION CLERK INVENTORY', 'ADMINISTRATION CLERK TECHNICAL SUPPORT', 'ADMINISTRATION SR. CLERK','ADMINISTRATION SR. CLERK BPB SUPPLIER & NPB STORE','ADMINISTRATION SR. CLERK CCTV','ADMINISTRATION SR. CLERK INVENTORY','ADMINISTRATION SR. CLERK TECHNICAL SUPPORT','ADMINISTRATION SUPPORT SUPV./JR. SUPV.','ADMINISTRATION SUPV./JR. SUPV.','DELIVERY ADM SR. CLERK','GPS ADM CLERK','PERISHABLE CHECKER FRUIT AND CHILLED FOOD','PERISHABLE HELPER FRUIT AND CHILLED FOOD','PHARMACIST','RECEIVNG ADM. CLERK RETUR' ],
+    RETUR: ['HELPER RETUR TOKO IDM','HELPER SARANA DCI','ISSUING SUPV./JR. SUPV','RECEIVING ADM SR. CLERK RETUR','RECEIVING CHECKER','RECEIVING CHEKER RETUR TOKO IDM','RECEIVING CHEKER SARANA DCI','RECEIVING CHEKER SUPPLIER','RECEIVING HELPER','RECEIVING SUPV./JR. SUPV. SUPPLIER','RECEIVNG ADM. CLERK RETUR','RETURN CHEKER RETUR SUPPLIER','ZONA COORDINATOR BULKY'],
+    RECEIVING: ['HELPER PENERIMAAN SUPPLIER','ISSUING SUPV./JR. SUPV','RECEIVING CHECKER','RECEIVING CHEKER SUPPLIER','RECEIVING HELPER'],
+    PERISHABLE: ['PERISHABLE CHECKER BAKERY','PERISHABLE CHECKER FRUIT AND CHILLED FOOD','PERISHABLE HELPER BAKERY','PERISHABLE HELPER FRUIT AND CHILLED FOOD','PERISHABLE SUPV./JR. SUPV. FRUIT AND CHILLED FOOD'],
+    WAREHOUSE: ['ADMINISTRATION SUPV./JR. SUPV.','COURIER COORDINATOR','FACILITIES COORDINATOR','HELPER','HELPER ISSUING DEPO1','HELPER RETUR TOKO IDM','ISSUING SUPV./JR. SUPV','LOADING CHECKER','PERISHABLE HELPER FRUIT AND CHILLED FOOD','PICKER','RECEIVING CHECKER','RECEIVING HELPER','RECEIVING SUPV./JR. SUPV. RETUR','SCANNER','SECOND CHECKER','STOCK OPNAME COORDINATOR','UTILITY OPERATOR','WAREHOUSE 1 SUPV./JR. SUPV.','WAREHOUSE 2 SUPV./JR. SUPV.','WAREHOUSE SUPPORT SUPV./JR. SUPV.','WAREHOUSE SUPV./JR. SUPV.','ZONA COORDINATOR BULKY','ZONA COORDINATOR FRACTION','ZONA COORDINATOR OTHERS'],
+    ISSUINGDELVIERY: ['CHIEF DRIVER','CHIEF DRIVER DRY','DELIVERY ADM CLERK','DELIVERY SUPPORT HELPER','DELIVERY SUPPORT SUPV./JR. SUPV','DELIVERY SUPV./JR. SUPV DRY','DRIVER DRY','DRIVER NON DRY','GPS ADM CLERK','HELPER','HELPER ISSUING DEPO1','ISSUING SUPV./JR. SUPV','LOADING CHECKER','LOADING COORDINATOR','RECEIVING CHECKER','RECEIVING HELPER'],
     WAREHOUSEKLIK: ['KLIK INDOMARET', 'PICKER', 'SCANNER']
 }
 
@@ -178,6 +178,7 @@ const { getTable } = useDataTable(
             { data: 'nama', name: 'nama' },
             { data: 'gudang', name: 'gudang' },
             { data: 'bagian', name: 'bagian' },
+            { data: 'jabatan', name: 'jabatan' },
             { data: 'status_kerja', name: 'status_kerja',
                 render: function (data, type, row) {
 
@@ -187,7 +188,7 @@ const { getTable } = useDataTable(
                         return `<span class="badge bg-green text-green-fg">AKTIF</span>`;
                     }
 
-                    if (data?.trim().toUpperCase() === 'NON AKTIF') {
+                    if (data?.trim().toUpperCase() === 'OUT') {
                         return `<span class="badge bg-red text-red-fg">NON AKTIF</span>`;
                     }
 
@@ -485,6 +486,7 @@ defineOptions({
                                                 <th>Nama</th>
                                                 <th>Gudang</th>
                                                 <th>Bagian</th>
+                                                <th>Jabatan DC</th>
                                                 <th>Status Kerja</th>
                                                 <th>Tanggal Efektif</th>
                                                 <th>Tanggal Tetap</th>
@@ -537,7 +539,7 @@ defineOptions({
                                     <FormSelect label="Gudang" name="gudang" v-model="form.gudang" :options="['DCI','DEPO 1','DEPO 2','WHK']" :error="form.errors.gudang" placeholder="-Pilih Gudang-"/>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Bagian" name="bagian" v-model="form.bagian" 
@@ -545,7 +547,7 @@ defineOptions({
                                     :error="form.errors.bagian" placeholder="-Pilih Bagian-"/>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                 <label class="form-label">Kelas</label>
                                     <select
@@ -569,9 +571,9 @@ defineOptions({
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Jabatan DC</label>
+                                    <!-- <label class="form-label">Jabatan DC</label>
                                     <select name="jabatan" v-model="form.jabatan"
                                         class="form-select"
                                         :disabled="form.bagian === ''"
@@ -589,10 +591,11 @@ defineOptions({
                                     </select>
                                     <div v-if="form.errors.jabatan" class="invalid-feedback">
                                         {{ form.errors.jabatan }}
-                                    </div>
+                                    </div> -->
+                                    <FormInput label="Jabatan DC" name="jabatan" v-model="form.jabatan" :error="form.errors.jabatan" placeholder="Masukkan Jabatan DC"/>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label class="form-label">Jabatan HO</label>
                                     <select name="jabatan" v-model="form.jabatan_ho"
@@ -627,7 +630,7 @@ defineOptions({
                                 <div class="mb-3">
                                     <FormSelect 
                                     label="Status Kerja" name="status_kerja" v-model="form.status_kerja" 
-                                    :options="['AKTIF','NON AKTIF']" 
+                                    :options="['AKTIF','OUT']" 
                                     :error="form.errors.status_kerja" placeholder="-Pilih Status Kerja-"/>
                                 </div>
                             </div>

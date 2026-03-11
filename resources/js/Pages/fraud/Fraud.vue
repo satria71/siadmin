@@ -40,8 +40,10 @@ const user = computed(() => usePage().props.auth.user)
 const form = useForm({
     nik: '',
     nama: '',
-    tgl: '',
+    bagian: '',
+    tanggal: '',
     fraud: '',
+    file_pdf: null
 })
 
 watch(() => form.nik, (nik) => {
@@ -52,6 +54,7 @@ const pilihKaryawan = (item) => {
 
     form.nik = item.nik
     form.nama = item.nama
+    form.bagian = item.bagian
 
     showSuggestions.value = false
 }
@@ -126,7 +129,7 @@ const clearErrorOnInput = (field) => {
 }
 
 clearErrorOnInput('nik')
-clearErrorOnInput('tgl')
+clearErrorOnInput('tanggal')
 clearErrorOnInput('fraud')
 
 //Reset form
@@ -178,21 +181,58 @@ const { getTable } = useDataTable(
             { data: 'nama', name: 'nama' },
             { data: 'fraud', name: 'fraud' },
             {
+                data: 'file_exists',
+                name: 'file_exists',
+                render: function(data, type, row) {
+
+                    if (data) {
+                        return `
+                            <span class="badge bg-green text-green-fg">ADA</span>
+                        `
+                    } else {
+                        return `
+                            <span class="badge bg-red text-red-fg">TIDAK ADA</span>
+                        `
+                    }
+
+                }
+            },
+            {
                 data: 'id',
                 name: 'action',
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row) {
+                    let pdfButton = ''
+
+                    if (row.file_exists) {
+                        const url = `/storage/fraud/${row.file_pdf}`
+
+                        pdfButton = `
+                            <a href="${url}" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+
+                            <a href="${url}" download class="btn btn-sm btn-success">
+                                <i class="fa-solid fa-download"></i>
+                            </a>
+                        `
+                    } else {
+                        pdfButton = `
+                            <button class="btn btn-sm btn-secondary pdf-missing">
+                                <i class="fa-solid fa-file-pdf"></i>
+                            </button>
+                        `
+                    }
+
                     return `
-                        <button class="btn btn-info btn-sm detail-btn" data-id="${data}">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
                         <button class="btn btn-warning btn-sm edit-btn" data-id="${data}">
                             <i class="fa-solid fa-pen-to-square"> </i>
                         </button>
                         <button class="btn btn-danger btn-sm delete-btn" data-id="${data}">
                             <i class="fa-solid fa-trash"></i>
                         </button>
+                        ${pdfButton}
                     `;
                 }
             },
@@ -351,6 +391,16 @@ onMounted(() => {
 
         })
     })
+
+    $('#setTable tbody').on('click', '.pdf-missing', function () {
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'File tidak tersedia',
+            text: 'File PDF belum diupload'
+        })
+
+    })
 })
 
 const submitForm = () => {
@@ -362,6 +412,7 @@ const submitForm = () => {
     const method = isEdit.value ? 'put' : 'post'
 
     form[method](url, {
+        forceFormData: true,
         onSuccess: () => {
             // SweetAlert
             Swal.fire({
@@ -474,6 +525,7 @@ defineProps({
                                             <th>NIK</th>
                                             <th>Nama</th>
                                             <th>Fraud</th>
+                                            <th>Berita Acara</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -497,7 +549,7 @@ defineProps({
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-12">
                             <div class="mb-6 position-relative autocomplete-wrapper">
                                 <FormInput label="NIK" name="nik" v-model="form.nik" :error="form.errors.nik" @keydown="handleKeydown"/>
                                 <ul
@@ -520,30 +572,39 @@ defineProps({
                                         class="list-group-item list-group-item-action"
                                         @click="pilihKaryawan(item)"
                                     >
-                                        {{ item.nik }} - {{ item.nama }}
+                                        {{ item.nik }} - {{ item.nama }} - {{ item.bagian }}
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <div class="mb-6">
                                 <FormInput label="Nama" name="nama" v-model="form.nama" readonly/>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="mb-6">
-                                <label class="form-label">Tanggal</label>
-                                <input type="date" class="form-control" name="example-text-input" placeholder="Your report name">
+                                <FormInput label="Bagian" name="bagian" v-model="form.bagian" readonly/>
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-6">
+                            <div class="mb-6">
+                                <FormInput label="Tanggal Fraud" name="tanggal" type="date" v-model="form.tanggal" :error="form.errors.tanggal"/>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
                             <div class="mb-6">
                                 <FormTextarea label="Fraud" name="fraud" v-model="form.fraud" :error="form.errors.fraud" placeholder="Masukkan kronologi fraud"/>
                             </div>
                         </div>
                         <div class="mb-3">
                             <div class="form-label">Custom File Input</div>
-                            <input type="file" class="form-control">
+                            <input 
+                                type="file" 
+                                class="form-control"
+                                accept="application/pdf"
+                                @change="e => form.file_pdf = e.target.files[0]"
+                            >
                         </div>
                     </div>
                 </div>

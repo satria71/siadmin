@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->string('nik');
             $table->string('fraud');
+            $table->string('file_pdf')->nullable();
         });
     }
 

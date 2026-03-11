@@ -6,6 +6,7 @@ use App\Models\Fraud;
 use App\Models\MasterKaryawan;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FraudController extends Controller
 {
@@ -16,25 +17,26 @@ class FraudController extends Controller
 
     public function data(Request $request)
     {
-        $columns = ['tanggal', 'nik', 'master_karyawans.nama', 'fraud'];
+        $columns = ['tanggal', 'nik', 'master_karyawans.nama', 'master_karyawans.bagian', 'fraud'];
 
         $query = Fraud::query()
         ->leftJoin('master_karyawans', 'frauds.nik', '=', 'master_karyawans.nik')
         ->select(
             'frauds.*',
-            'master_karyawans.nama'
+            'master_karyawans.nama',
+            'master_karyawans.bagian'
         );
 
         // Search
-    if ($request->filled('search.value')) {
-        $search = $request->input('search.value');
+        if ($request->filled('search.value')) {
+            $search = $request->input('search.value');
 
-        $query->where(function ($q) use ($search) {
-            $q->where('fraud', 'like', "%{$search}%")
-              ->orWhere('tanggal', 'like', "%{$search}%")
-              ->orWhere('nik', 'like', "%{$search}%");
-        });
-    }
+            $query->where(function ($q) use ($search) {
+                $q->where('fraud', 'like', "%{$search}%")
+                ->orWhere('tanggal', 'like', "%{$search}%")
+                ->orWhere('nik', 'like', "%{$search}%");
+            });
+        }
 
         $total = $query->count();
 
@@ -53,7 +55,15 @@ class FraudController extends Controller
         $data = $query
             ->skip($request->start)
             ->take($request->length)
-            ->get();
+            ->get()
+            ->map(function ($item) {
+
+                $item->file_exists = $item->file_pdf
+                    ? Storage::disk('public')->exists('fraud/'.$item->file_pdf)
+                    : false;
+
+                return $item;
+            });
 
         return response()->json([
             "draw" => intval($request->draw),
@@ -66,15 +76,30 @@ class FraudController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nik' => 'required|max:20|unique:master_karyawans,nik',
-            'tgl' => 'required|date',
+            'nik' => 'required|max:20',
+            'tanggal' => 'required|date',
             'fraud' => 'required',
+            'file_pdf' => 'nullable|mimes:pdf|max:2048'
         ], [
             'nik.required' => 'NIK wajib diisi',
-            'nik.unique' => 'NIK sudah terdaftar',
-            'tgl.required' => 'Tanggal wajib diisi',
+            'tanggal.required' => 'Tanggal wajib diisi',
             'fraud.required' => 'Kronologi fraud wajib diisi',
+            'file_pdf.mimes' => 'Ukuran max file 2mb'
         ]);
+
+        if ($request->hasFile('file_pdf')) {
+
+            $file = $request->file('file_pdf');
+
+            $nik = $request->nik;
+            $tanggal = date('Ymd', strtotime($request->tanggal));
+
+            $filename = "FRD_{$nik}_{$tanggal}.".$file->getClientOriginalExtension();
+
+            $file->storeAs('fraud', $filename, 'public');
+
+            $validated['file_pdf'] = $filename;
+        }
 
         Fraud::create($validated);
 
@@ -86,8 +111,8 @@ class FraudController extends Controller
         $data = Fraud::findOrFail($id);
 
         $validated = $request->validate([
-            'nik' => 'required|max:20|unique:master_karyawans,nik,' . $id,
-            'tgl' => 'required|date',
+            'nik' => 'required|max:20' . $id,
+            'tanggal' => 'required|date',
             'fraud' => 'required',
         ]);
 
@@ -100,7 +125,12 @@ class FraudController extends Controller
 
     public function delete($id)
     {
-        Fraud::findOrFail($id)->delete();
+        // Fraud::findOrFail($id)->delete();
+        $data = Fraud::findOrFail($id);
+
+        if ($data->file_pdf) {
+            Storage::disk('public')->delete('fraud/'.$data->file_pdf);
+        }
 
         return redirect()->back();
     }
@@ -108,7 +138,7 @@ class FraudController extends Controller
     public function getByNik($nik)
     {
         $karyawan = MasterKaryawan::where('nik', $nik)
-            ->select('nik','nama')
+            ->select('nik','nama','bagian')
             ->first();
 
         if (!$karyawan) {
@@ -124,7 +154,8 @@ class FraudController extends Controller
 
         $data = MasterKaryawan::where('nik', 'like', "%{$search}%")
             ->orWhere('nama', 'like', "%{$search}%")
-            ->select('nik','nama')
+            ->orWhere('bagian', 'like', "%{$search}%")
+            ->select('nik','nama','bagian')
             ->limit(10)
             ->get();
 

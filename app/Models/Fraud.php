@@ -7,5 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Fraud extends Model
 {
     public $timestamps = false;
-    protected $fillable = ['tanggal', 'nik', 'fraud'];
+    protected $fillable = [
+        'tanggal', 
+        'nik', 
+        'fraud', 
+        'file_pdf'
+    ];
 }

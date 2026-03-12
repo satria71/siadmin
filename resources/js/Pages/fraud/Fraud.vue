@@ -414,6 +414,71 @@ onMounted(() => {
     })
 })
 
+// const submitForm = () => {
+
+//     console.log(form)
+
+//     const url = isEdit.value
+//         ? `/fraud/update/${selectedId.value}`
+//         : '/fraud/store'
+
+//     const method = isEdit.value ? 'put' : 'post'
+
+//     form[method](url, {
+//         forceFormData: true,
+//         onSuccess: () => {
+//             // SweetAlert
+//             Swal.fire({
+//                 icon: 'success',
+//                 title: 'Berhasil',
+//                 text: isEdit.value 
+//                     ? 'Data karyawan berhasil diperbarui'
+//                     : 'Data karyawan berhasil ditambahkan',
+//                 // timer: 2000,
+//                 showConfirmButton: true
+//             })
+
+//             // Swal.fire({
+//             //     toast: true,
+//             //     position: 'top-end',
+//             //     icon: 'success',
+//             //     title: isEdit.value
+//             //         ? 'Data Karyawan diperbarui'
+//             //         : 'Data karyawan ditambahkan',
+//             //     showConfirmButton: false,
+//             //     timer: 2500,
+//             //     timerProgressBar: true
+//             // })
+
+//             form.reset()
+
+//             $('#setTable').DataTable().ajax.reload()
+
+//             const modalEl = document.getElementById('modal-report')
+//             const modal = Modal.getInstance(modalEl)
+//             modal.hide()
+//         },
+//         onError: (errors) => {
+//             console.log(errors)
+
+//             const firstError = Object.keys(errors)[0]
+
+//             const el = document.querySelector(`[name="${firstError}"]`)
+
+//             if (el) {
+//                 el.focus()
+//                 el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+//             }
+
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Form belum lengkap',
+//                 text: 'Periksa kembali data yang wajib diisi'
+//             })
+//         }
+//     })
+// }
+
 const submitForm = () => {
 
     console.log(form)
@@ -422,61 +487,73 @@ const submitForm = () => {
         ? `/fraud/update/${selectedId.value}`
         : '/fraud/store'
 
-    const method = isEdit.value ? 'put' : 'post'
+    if (isEdit.value) {
 
-    form[method](url, {
-        forceFormData: true,
-        onSuccess: () => {
-            // SweetAlert
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: isEdit.value 
-                    ? 'Data karyawan berhasil diperbarui'
-                    : 'Data karyawan berhasil ditambahkan',
-                // timer: 2000,
-                showConfirmButton: true
-            })
+        form.post(url, {
+            forceFormData: true,
+            data: {
+                _method: 'put'
+            },
+            onSuccess: () => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data karyawan berhasil diperbarui',
+                    showConfirmButton: true
+                })
 
-            // Swal.fire({
-            //     toast: true,
-            //     position: 'top-end',
-            //     icon: 'success',
-            //     title: isEdit.value
-            //         ? 'Data Karyawan diperbarui'
-            //         : 'Data karyawan ditambahkan',
-            //     showConfirmButton: false,
-            //     timer: 2500,
-            //     timerProgressBar: true
-            // })
+                form.reset()
 
-            form.reset()
+                $('#setTable').DataTable().ajax.reload()
 
-            $('#setTable').DataTable().ajax.reload()
+                const modalEl = document.getElementById('modal-report')
+                const modal = Modal.getInstance(modalEl)
+                modal.hide()
+            },
+            onError: (errors) => {
 
-            const modalEl = document.getElementById('modal-report')
-            const modal = Modal.getInstance(modalEl)
-            modal.hide()
-        },
-        onError: (errors) => {
-            console.log(errors)
+                console.log(errors)
 
-            const firstError = Object.keys(errors)[0]
+                const firstError = Object.keys(errors)[0]
 
-            const el = document.querySelector(`[name="${firstError}"]`)
+                const el = document.querySelector(`[name="${firstError}"]`)
 
-            if (el) {
-                el.focus()
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                if (el) {
+                    el.focus()
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Form belum lengkap',
+                    text: 'Periksa kembali data yang wajib diisi'
+                })
             }
+        })
 
-            Swal.fire({
-                icon: 'error',
-                title: 'Form belum lengkap',
-                text: 'Periksa kembali data yang wajib diisi'
-            })
-        }
-    })
+    } else {
+
+        form.post(url, {
+            forceFormData: true,
+            onSuccess: () => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Data karyawan berhasil ditambahkan',
+                    showConfirmButton: true
+                })
+
+                form.reset()
+
+                $('#setTable').DataTable().ajax.reload()
+
+                const modalEl = document.getElementById('modal-report')
+                const modal = Modal.getInstance(modalEl)
+                modal.hide()
+            }
+        })
+
+    }
 }
 
 defineOptions({

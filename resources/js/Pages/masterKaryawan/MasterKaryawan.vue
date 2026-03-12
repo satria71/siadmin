@@ -598,7 +598,7 @@ defineOptions({
                             <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label class="form-label">Jabatan HO</label>
-                                    <select name="jabatan" v-model="form.jabatan_ho"
+                                    <select name="jabatan_ho" v-model="form.jabatan_ho"
                                         class="form-select"
                                         :disabled="form.bagian === ''"
                                         :class="{ 'is-invalid': form.errors.jabatan_ho }">

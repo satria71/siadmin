@@ -57,7 +57,7 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/fraud', [FraudController::class, 'index'])->name('fraud');
     Route::get('/fraud/data', [FraudController::class, 'data'])->name('fraud.data');
     Route::post('/fraud/store', [FraudController::class, 'store']);
-    Route::put('/fraud/update/{id}', [FraudController::class, 'update']);
+    Route::post('/fraud/update/{id}', [FraudController::class, 'update']);
     Route::delete('/fraud/delete/{id}', [FraudController::class, 'delete']);
     Route::get('/fraud/by-nik/{nik}', [FraudController::class, 'getByNik']);
     Route::get('/fraud/search', [FraudController::class, 'search']);

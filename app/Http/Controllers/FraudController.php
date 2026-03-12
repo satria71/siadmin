@@ -132,6 +132,8 @@ class FraudController extends Controller
             Storage::disk('public')->delete('fraud/'.$data->file_pdf);
         }
 
+         $data->delete();
+         
         return redirect()->back();
     }
 

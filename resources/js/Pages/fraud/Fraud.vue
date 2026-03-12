@@ -142,7 +142,18 @@ const resetForm = () => {
 
 const fillForm = (row) => {
 
-    Object.assign(form, row)
+    // Object.assign(form, row)
+
+    // selectedId.value = row.id
+    // isEdit.value = true
+
+    // showModal()
+
+    form.nik = row.nik
+    form.nama = row.nama
+    form.bagian = row.bagian
+    form.tanggal = row.tanggal
+    form.fraud = row.fraud
 
     selectedId.value = row.id
     isEdit.value = true
@@ -405,6 +416,8 @@ onMounted(() => {
 
 const submitForm = () => {
 
+    console.log(form)
+
     const url = isEdit.value
         ? `/fraud/update/${selectedId.value}`
         : '/fraud/store'
@@ -446,6 +459,7 @@ const submitForm = () => {
             modal.hide()
         },
         onError: (errors) => {
+            console.log(errors)
 
             const firstError = Object.keys(errors)[0]
 

@@ -111,7 +111,7 @@ class FraudController extends Controller
         $data = Fraud::findOrFail($id);
 
         $validated = $request->validate([
-            'nik' => 'required|max:20' . $id,
+            'nik' => 'required|max:20',
             'tanggal' => 'required|date',
             'fraud' => 'required',
         ]);
@@ -133,7 +133,7 @@ class FraudController extends Controller
         }
 
          $data->delete();
-         
+
         return redirect()->back();
     }
 

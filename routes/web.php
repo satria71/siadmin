@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FraudController;
 use App\Http\Controllers\SerahTerimaController;
 use App\Http\Controllers\MasterKaryawanController;
+use App\Http\Controllers\AbsensiController;
+
 use Inertia\Inertia;
 
 // Route::get('/', function () {
@@ -69,4 +71,9 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::post('/masterKaryawan/store', [MasterKaryawanController::class, 'store']);
     Route::put('/masterKaryawan/update/{id}', [MasterKaryawanController::class, 'update']);
     Route::delete('/masterKaryawan/delete/{id}', [MasterKaryawanController::class, 'delete']);
+
+    //Absensi Admin
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi');
+    Route::post('/absensi/upload', [AbsensiController::class, 'upload'])->name('absensi.upload');
+    Route::get('/absensi/data', [AbsensiController::class, 'data']);
 });

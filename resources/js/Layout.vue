@@ -460,8 +460,7 @@ const user = computed(() => usePage().props.auth.user)
                             <span class="nav-link-title"> Absensi </span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#"> Upload Data </a>
-                            <a class="dropdown-item" href="#"> Kelola Data </a>
+                            <Link class="dropdown-item" href="/absensi"> Kelola Data </Link>
                             <a class="dropdown-item" href="#"> Laporan </a>
                         </div>
                     </li>

@@ -48,3 +48,13 @@ html, body {
     font-size: 12px;
 }
 
+.upload-box{
+background:#f8fafc;
+transition:.2s;
+cursor:pointer;
+}
+
+.upload-box:hover{
+background:#f1f5f9;
+border-color:#206bc4;
+}

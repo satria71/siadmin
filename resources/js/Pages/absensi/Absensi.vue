@@ -14,6 +14,10 @@ import { router } from '@inertiajs/vue3'
 import { useForm } from '@inertiajs/vue3'
 import axios from 'axios'
 
+
+const progress = ref(0)
+const uploading = ref(false)
+
 const breadcrumbs = [
   { label: 'Dashboard', url: '/panel' },
   { label: 'Kelola Data', url: 'absensi' },
@@ -47,37 +51,25 @@ const { getTable } = useDataTable(
             { data: 'jabatan', name: 'jabatan' },
             { data: 'jumlah_hadir', name: 'jumlah_hadir' },
             { data: 'jumlah_terlambat', name: 'jumlah_terlambat' },
-            { data: 'menit_terlambat', 
-              name: 'menit_terlambat',
-                render: function(data) {
-
-                    let jam = Math.floor(data / 60)
-                    let menit = data % 60
-                    let detik = data % 60
-
-                    jam = String(jam).padStart(2,'0')
-                    menit = String(menit).padStart(2,'0')
-                    detik = String(detik).padStart(2,'0')
-
-                    return jam + ':' + menit + ':' + detik
-                }
-            },
             { data: 'jumlah_pulang_cepat', name: 'jumlah_pulang_cepat' },
-            { data: 'menit_pulang_cepat', 
-              name: 'menit_pulang_cepat',
+            {
+                data: 'menit_terlambat',
+                name: 'menit_terlambat',
                 render: function(data) {
-
-                        let jam = Math.floor(data / 60)
-                        let menit = data % 60
-                        let detik = data % 60
-
-                        jam = String(jam).padStart(2,'0')
-                        menit = String(menit).padStart(2,'0')
-                        detik = String(detik).padStart(2,'0')
-
-                        return jam + ':' + menit + ':' + detik
+                    return data ?? '00:00:00'
                 }
             },
+            {
+                data: 'menit_pulang_cepat',
+                name: 'menit_pulang_cepat',
+                render: function(data) {
+                    return data ?? '00:00:00'
+                }
+            },
+            { data: 'lam', name: 'lam' },
+            { data: 'lap', name: 'lap' },
+            { data: 'mangkir', name: 'mangkir' },
+            { data: 'fraud', name: 'fraud' }
         ],
     {
         dom:
@@ -166,6 +158,8 @@ const handleFile = (e) => {
   file.value = e.target.files[0]
 }
 
+const fileInput = ref(null)
+
 const uploadFile = () => {
 
   if (!file.value) {
@@ -176,10 +170,30 @@ const uploadFile = () => {
   const formData = new FormData()
   formData.append('file', file.value)
 
+  uploading.value = true
+  progress.value = 0
+
   router.post('/absensi/upload', formData, {
     forceFormData: true,
+
+    onProgress: (event) => {
+      progress.value = Math.round(event.percentage)
+    },
+
     onSuccess: () => {
       Swal.fire('Sukses','Data berhasil diimport','success')
+
+      getTable().ajax.reload(null, false)
+
+      file.value = null
+      fileInput.value.value = null
+
+      uploading.value = false
+      progress.value = 0
+    },
+
+    onError: () => {
+      uploading.value = false
     }
   })
 }
@@ -253,12 +267,23 @@ defineProps({
                                     </svg>
                                     <h3>Upload File Absensi</h3>
                                     <p class="text-muted">Drag & drop CSV atau pilih file</p>
-                                    <input type="file" class="form-control mt-3" accept=".xlsx,.xls" @change="handleFile">
+                                    <input type="file" class="form-control mt-3" accept=".xlsx,.xls" @change="handleFile" ref="fileInput">
+                                    <div v-if="uploading" class="mt-3">
+                                        <div class="progress">
+                                            <div 
+                                            class="progress-bar progress-bar-striped progress-bar-animated"
+                                            role="progressbar"
+                                            :style="{ width: progress + '%' }"
+                                            >
+                                            {{ progress }}%
+                                            </div>
+                                        </div>
+                                    </div>
                                     <!-- <button class="btn btn-primary mt-3" @click="uploadFile">Import CSV</button>
                                     <button class="btn btn-secondary mt-3">Download Format</button> -->
                                     <!-- tombol flex -->
                                     <div class="d-flex justify-content-center gap-2 mt-3">
-                                        <button class="btn btn-primary" @click="uploadFile">Import CSV</button>
+                                        <button class="btn btn-primary" @click="uploadFile" :disabled="uploading">{{ uploading ? 'Uploading...' : 'Import Excel' }}</button>
                                         <button class="btn btn-secondary" @click="downloadFormat">Download Format</button>
                                     </div>
                                 </div>
@@ -294,10 +319,14 @@ defineProps({
                                                 <th>Nama</th>
                                                 <th>Jabatan</th>
                                                 <th>Hadir</th>
-                                                <th>Jumlah Terlambat</th>
-                                                <th>Menit Terlambat</th>
+                                                <th>Terlambat</th>
                                                 <th>Pulang Cepat</th>
+                                                <th>Menit Terlambat</th>
                                                 <th>Menit Pulang Cepat</th>
+                                                <th>LAP</th>
+                                                <th>LAM</th>
+                                                <th>Mangkir</th>
+                                                <th>Fraud</th>
                                             </tr>
                                         </thead>
                                     </table>

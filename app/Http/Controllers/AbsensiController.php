@@ -40,63 +40,143 @@ class AbsensiController extends Controller
             7 => 'menit_pulang_cepat'
         ];
 
-        $query = DB::table('absensis as a')
-            ->leftJoin('shifts as s', 'a.shiftcode', '=', 's.shiftcode')
-            ->leftJoin('master_karyawans as k', 'a.nik', '=', 'k.nik')
-            ->selectRaw("
+        $query = DB::table(DB::raw("
+        (
+            SELECT
                 a.nik,
                 k.nama,
                 k.jabatan,
+                a.keterangan,
 
+                /* MACHINE IN */
+                CASE
+                    WHEN a.machine_in = '00:00:00' OR a.machine_in IS NULL
+                    THEN NULL
+                    ELSE TIMESTAMP(DATE(a.tanggal), a.machine_in)
+                END AS machine_in,
+
+                /* MACHINE OUT NORMALISASI */
+                CASE
+                    WHEN a.machine_out = '00:00:00' OR a.machine_out IS NULL
+                    THEN NULL
+
+                    /* jika pulang lewat tengah malam */
+                    WHEN a.machine_out < s.jam_masuk
+                    THEN TIMESTAMP(DATE(a.tanggal) + INTERVAL 1 DAY, a.machine_out)
+
+                    ELSE TIMESTAMP(DATE(a.tanggal), a.machine_out)
+                END AS real_machine_out,
+
+                /* SHIFT START */
+                TIMESTAMP(DATE(a.tanggal), s.jam_masuk) AS shift_start,
+
+                /* SHIFT END */
+                CASE
+                    WHEN s.jam_pulang < s.jam_masuk
+                    THEN TIMESTAMP(DATE(a.tanggal) + INTERVAL 1 DAY, s.jam_pulang)
+                    ELSE TIMESTAMP(DATE(a.tanggal), s.jam_pulang)
+                END AS shift_end
+
+            FROM absensis a
+            LEFT JOIN shifts s ON a.shiftcode = s.shiftcode
+            LEFT JOIN master_karyawans k ON a.nik = k.nik
+        ) t
+        "))
+        ->selectRaw("
+            nik,
+            nama,
+            jabatan,
+
+            /* HADIR */
+            SUM(CASE WHEN keterangan = 'Hadir' THEN 1 ELSE 0 END) AS jumlah_hadir,
+
+            /* TERLAMBAT */
+            SUM(
+                CASE
+                    WHEN machine_in IS NOT NULL
+                    AND machine_in > shift_start
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS jumlah_terlambat,
+
+            COALESCE(
+                SEC_TO_TIME(
+                    SUM(
+                        CASE
+                            WHEN machine_in IS NOT NULL
+                            AND machine_in > shift_start
+                            THEN GREATEST(TIMESTAMPDIFF(SECOND, shift_start, machine_in),0)
+                            ELSE 0
+                        END
+                    )
+                ),
+            '00:00:00') AS menit_terlambat,
+
+            /* PULANG CEPAT */
+            SUM(
+                CASE
+                    WHEN real_machine_out IS NOT NULL
+                    AND real_machine_out < shift_end
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS jumlah_pulang_cepat,
+
+            COALESCE(
+                SEC_TO_TIME(
+                    SUM(
+                        CASE
+                            WHEN real_machine_out IS NOT NULL
+                            AND real_machine_out < shift_end
+                            THEN GREATEST(TIMESTAMPDIFF(SECOND, real_machine_out, shift_end),0)
+                            ELSE 0
+                        END
+                    )
+                ),
+            '00:00:00') AS menit_pulang_cepat,
+
+            /* FRAUD */
+            SUM(CASE WHEN keterangan = 'Lupa Absen Masuk' THEN 1 ELSE 0 END) AS lam,
+            SUM(CASE WHEN keterangan = 'Lupa Absen Pulang' THEN 1 ELSE 0 END) AS lap,
+            SUM(CASE WHEN keterangan = 'Mangkir' THEN 1 ELSE 0 END) AS mangkir,
+
+            /* TOTAL FRAUD */
+            (
                 SUM(
-                    CASE 
-                        WHEN a.keterangan = 'hadir'
+                    CASE
+                        WHEN machine_in IS NOT NULL
+                        AND machine_in > shift_start
                         THEN 1 ELSE 0
                     END
-                ) AS jumlah_hadir,
-
+                )
+                +
                 SUM(
-                    CASE 
-                        WHEN a.machine_in IS NOT NULL 
-                        AND a.machine_in > s.jam_masuk 
+                    CASE
+                        WHEN real_machine_out IS NOT NULL
+                        AND real_machine_out < shift_end
                         THEN 1 ELSE 0
                     END
-                ) AS jumlah_terlambat,
-
-                SUM(
-                    CASE 
-                        WHEN a.machine_in IS NOT NULL 
-                        AND a.machine_in > s.jam_masuk
-                        THEN TIMESTAMPDIFF(MINUTE, s.jam_masuk, a.machine_in)
-                        ELSE 0
-                    END
-                ) AS menit_terlambat,
-
-                SUM(
-                    CASE 
-                        WHEN a.machine_out IS NOT NULL 
-                        AND a.machine_out < s.jam_pulang 
-                        THEN 1 ELSE 0
-                    END
-                ) AS jumlah_pulang_cepat,
-
-                SUM(
-                    CASE 
-                        WHEN a.machine_out IS NOT NULL 
-                        AND a.machine_out < s.jam_pulang
-                        THEN TIMESTAMPDIFF(MINUTE, a.machine_out, s.jam_pulang)
-                        ELSE 0
-                    END
-                ) AS menit_pulang_cepat
-            ")
-            ->groupBy('a.nik','k.nama','k.jabatan');
+                )
+                +
+                SUM(CASE WHEN keterangan = 'Lupa Absen Masuk' THEN 1 ELSE 0 END)
+                +
+                SUM(CASE WHEN keterangan = 'Lupa Absen Pulang' THEN 1 ELSE 0 END)
+                +
+                SUM(CASE WHEN keterangan = 'Mangkir' THEN 1 ELSE 0 END)
+            ) AS fraud
+        ")
+        ->groupBy('nik','nama','jabatan');
 
         // SEARCH
         if ($request->filled('search.value')) {
             $search = $request->input('search.value');
 
-            $query->where('a.nik', 'like', "%{$search}%")
-                  ->orWhere('k.nama', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nik', 'like', "%{$search}%")
+                ->orWhere('nama', 'like', "%{$search}%")
+                ->orWhere('jabatan', 'like', "%{$search}%");
+            });
         }
 
         // TOTAL

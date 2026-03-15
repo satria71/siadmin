@@ -43,10 +43,41 @@ const { getTable } = useDataTable(
                 }
             },  
             { data: 'nik', name: 'nik' },
+            { data: 'nama', name: 'nama' },
+            { data: 'jabatan', name: 'jabatan' },
+            { data: 'jumlah_hadir', name: 'jumlah_hadir' },
             { data: 'jumlah_terlambat', name: 'jumlah_terlambat' },
-            { data: 'menit_terlambat', name: 'menit_terlambat' },
+            { data: 'menit_terlambat', 
+              name: 'menit_terlambat',
+                render: function(data) {
+
+                    let jam = Math.floor(data / 60)
+                    let menit = data % 60
+                    let detik = data % 60
+
+                    jam = String(jam).padStart(2,'0')
+                    menit = String(menit).padStart(2,'0')
+                    detik = String(detik).padStart(2,'0')
+
+                    return jam + ':' + menit + ':' + detik
+                }
+            },
             { data: 'jumlah_pulang_cepat', name: 'jumlah_pulang_cepat' },
-            { data: 'menit_pulang_cepat', name: 'menit_pulang_cepat' },
+            { data: 'menit_pulang_cepat', 
+              name: 'menit_pulang_cepat',
+                render: function(data) {
+
+                        let jam = Math.floor(data / 60)
+                        let menit = data % 60
+                        let detik = data % 60
+
+                        jam = String(jam).padStart(2,'0')
+                        menit = String(menit).padStart(2,'0')
+                        detik = String(detik).padStart(2,'0')
+
+                        return jam + ':' + menit + ':' + detik
+                }
+            },
         ],
     {
         dom:
@@ -197,7 +228,7 @@ defineProps({
          <div class="page-body">
             <div class="container-fluid">
                 <div class="row row-deck row-cards">
-                    <div class="col-sm-6 col-lg-12">
+                    <div class="col-sm-6 col-lg-6">
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Upload Absensi CSV</h3>
@@ -223,8 +254,25 @@ defineProps({
                                     <h3>Upload File Absensi</h3>
                                     <p class="text-muted">Drag & drop CSV atau pilih file</p>
                                     <input type="file" class="form-control mt-3" accept=".xlsx,.xls" @change="handleFile">
-                                    <button class="btn btn-primary mt-3" @click="uploadFile">Import CSV</button>
+                                    <!-- <button class="btn btn-primary mt-3" @click="uploadFile">Import CSV</button>
+                                    <button class="btn btn-secondary mt-3">Download Format</button> -->
+                                    <!-- tombol flex -->
+                                    <div class="d-flex justify-content-center gap-2 mt-3">
+                                        <button class="btn btn-primary" @click="uploadFile">Import CSV</button>
+                                        <button class="btn btn-secondary" @click="downloadFormat">Download Format</button>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Rank Bagian</h3>
+                            </div>
+
+                            <div class="card-body">
                             </div>
                         </div>
                     </div>
@@ -236,19 +284,24 @@ defineProps({
                                 <h3 class="card-title">Resume Absensi</h3>
                             </div>
 
-                            <div class="table-responsive">
-                                <table id="setTable" class="table table-vcenter table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>NIK</th>
-                                            <th>Jumlah Terlambat</th>
-                                            <th>Menit Terlambat</th>
-                                            <th>Pulang Cepat</th>
-                                            <th>Menit Pulang Cepat</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="setTable" class="table table-vcenter table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>NIK</th>
+                                                <th>Nama</th>
+                                                <th>Jabatan</th>
+                                                <th>Hadir</th>
+                                                <th>Jumlah Terlambat</th>
+                                                <th>Menit Terlambat</th>
+                                                <th>Pulang Cepat</th>
+                                                <th>Menit Pulang Cepat</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -31,16 +31,29 @@ class AbsensiController extends Controller
     {
         $columns = [
             0 => 'a.nik',
-            1 => 'jumlah_terlambat',
-            2 => 'menit_terlambat',
-            3 => 'jumlah_pulang_cepat',
-            4 => 'menit_pulang_cepat'
+            1 => 'k.nama',
+            2 => 'k.jabatan',
+            3 => 'k.jumlah_hadir',
+            4 => 'jumlah_terlambat',
+            5 => 'menit_terlambat',
+            6 => 'jumlah_pulang_cepat',
+            7 => 'menit_pulang_cepat'
         ];
 
         $query = DB::table('absensis as a')
             ->leftJoin('shifts as s', 'a.shiftcode', '=', 's.shiftcode')
+            ->leftJoin('master_karyawans as k', 'a.nik', '=', 'k.nik')
             ->selectRaw("
                 a.nik,
+                k.nama,
+                k.jabatan,
+
+                SUM(
+                    CASE 
+                        WHEN a.keterangan = 'hadir'
+                        THEN 1 ELSE 0
+                    END
+                ) AS jumlah_hadir,
 
                 SUM(
                     CASE 
@@ -76,12 +89,14 @@ class AbsensiController extends Controller
                     END
                 ) AS menit_pulang_cepat
             ")
-            ->groupBy('a.nik');
+            ->groupBy('a.nik','k.nama','k.jabatan');
 
         // SEARCH
         if ($request->filled('search.value')) {
             $search = $request->input('search.value');
-            $query->where('a.nik', 'like', "%{$search}%");
+
+            $query->where('a.nik', 'like', "%{$search}%")
+                  ->orWhere('k.nama', 'like', "%{$search}%");
         }
 
         // TOTAL

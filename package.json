@@ -23,6 +23,7 @@
         "@inertiajs/vue3": "^2.3.15",
         "@tabler/core": "^1.4.0",
         "@vitejs/plugin-vue": "^6.0.4",
+        "chart.js": "^4.5.1",
         "datatables.net": "^2.3.7",
         "datatables.net-bs5": "^2.3.7",
         "datatables.net-buttons": "^3.2.6",

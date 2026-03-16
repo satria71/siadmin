@@ -107,10 +107,10 @@ class AbsensiController extends Controller
     public function data(Request $request)
     {
         $columns = [
-            0 => 'a.nik',
-            1 => 'k.nama',
-            2 => 'k.jabatan',
-            3 => 'k.jumlah_hadir',
+            0 => 'nik',
+            1 => 'nama',
+            2 => 'jabatan',
+            3 => 'jumlah_hadir',
             4 => 'jumlah_terlambat',
             5 => 'menit_terlambat',
             6 => 'jumlah_pulang_cepat',
@@ -316,6 +316,60 @@ class AbsensiController extends Controller
             ")
             ->where('a.nik',$nik)
             ->orderBy('a.tanggal')
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function statistik()
+    {
+        $data = DB::table('absensis')
+        ->selectRaw("
+            SUM(CASE WHEN keterangan='Hadir' THEN 1 ELSE 0 END) as hadir,
+            SUM(CASE WHEN keterangan='Mangkir' THEN 1 ELSE 0 END) as mangkir,
+            SUM(CASE WHEN keterangan='Libur' THEN 1 ELSE 0 END) as libur,
+            SUM(CASE WHEN keterangan LIKE 'Lupa%' THEN 1 ELSE 0 END) as lupa_absen
+        ")
+        ->first();
+
+        return response()->json($data);
+    }
+
+    public function chart()
+    {
+        $data = DB::table('absensis')
+        ->selectRaw("
+            DATE(tanggal) as tanggal,
+            SUM(CASE WHEN keterangan='Hadir' THEN 1 ELSE 0 END) as hadir,
+            SUM(CASE WHEN keterangan='Mangkir' THEN 1 ELSE 0 END) as mangkir
+        ")
+        ->groupBy('tanggal')
+        ->orderBy('tanggal')
+        ->get();
+
+        return response()->json($data);
+    }
+
+    public function ranking()
+    {
+        $data = DB::table('absensis')
+        ->selectRaw("
+            nik,
+            COUNT(CASE WHEN keterangan='Hadir' THEN 1 END) as hadir
+        ")
+        ->groupBy('nik')
+        ->orderByDesc('hadir')
+        ->limit(10)
+        ->get();
+
+        return response()->json($data);
+    }
+
+    public function heatmap()
+    {
+        $data = DB::table('absensis')
+            ->select('tanggal','keterangan')
+            ->orderBy('tanggal')
             ->get();
 
         return response()->json($data);

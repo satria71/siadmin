@@ -62,3 +62,15 @@ border-color:#206bc4;
 .table-orange{
     background-color:#ffe5b4;
 }
+
+.heatmap{
+display:grid;
+grid-template-columns:repeat(7,20px);
+gap:4px;
+}
+
+.heatbox{
+width:20px;
+height:20px;
+border-radius:3px;
+}

@@ -78,4 +78,8 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/absensi/data', [AbsensiController::class, 'data']);
     Route::post('/absensi/finalisasi',[AbsensiController::class,'finalisasi']);
     Route::get('/absensi/detail/{id}', [AbsensiController::class,'detail']);
+    Route::get('/absensi/statistik',[AbsensiController::class,'statistik']);
+    Route::get('/absensi/chart',[AbsensiController::class,'chart']);
+    Route::get('/absensi/ranking',[AbsensiController::class,'ranking']);
+    Route::get('/absensi/heatmap',[AbsensiController::class,'heatmap']);
 });

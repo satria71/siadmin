@@ -264,6 +264,9 @@ const getBadge = (ket) => {
     if(ket === 'Lupa Absen Masuk') return 'badge bg-yellow text-yellow-fg'
     if(ket === 'Lupa Absen Pulang') return 'badge bg-yellow text-yellow-fg'
     if(ket === 'Dinas Luar Kantor Pagi') return 'badge bg-dark text-dark-fg'
+    if(ket === 'Ijin Datang Terlambat') return 'badge bg-dark text-dark-fg'
+    if(ket === 'Cuti Tahunan') return 'badge bg-dark text-dark-fg'
+    if(ket === 'Ijin Pulang Karena Sakit') return 'badge bg-dark text-dark-fg'
 
     return 'bg-secondary'
 }
@@ -279,12 +282,13 @@ const getRowClass = (item) => {
     }
 
     if(item.terlambat && item.terlambat !== '00:00:00'){
-        return 'table-warning'
+        return 'table-orange'
     }
 
     if(item.pulang_cepat && item.pulang_cepat !== '00:00:00'){
         return 'table-orange'
     }
+    
 
     return ''
 }
@@ -434,70 +438,67 @@ defineProps({
          </div>
 
          <div class="modal modal-blur fade" id="modalDetail" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-full-width modal-dialog-centered" role="document">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">Detail Absensi</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Detail Absensi</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
 
-                    <div class="modal-body">
+                        <div class="modal-body">
 
-                    <table id="setTable" class="table table-vcenter table-striped">
-                        <thead>
-                            <tr>
-                                <th>Tanggal</th>
-                                <th>Shift</th>
-                                <th>Normal In</th>
-                                <th>Machine In</th>
-                                <th>Terlambat</th>
-                                <th>Normal Out</th>
-                                <th>Machine Out</th>
-                                <th>Pulang Cepat</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
+                            <table id="setTable" class="table table-vcenter">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Shift</th>
+                                        <th>Normal In</th>
+                                        <th>Machine In</th>
+                                        <th>Terlambat</th>
+                                        <th>Normal Out</th>
+                                        <th>Machine Out</th>
+                                        <th>Pulang Cepat</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
 
-                        <tbody>
-                            <tr v-for="item in detailData" :key="item.tanggal" :class="getRowClass(item)">
+                                <tbody>
+                                    <tr v-for="item in detailData" :key="item.tanggal" :class="getRowClass(item)">
 
-                                <td>{{ item.tanggal }}</td>
-                                <td>{{ item.shiftcode }}</td>
-                                <td>{{ item.normal_in }}</td>
-                                <td>{{ item.machine_in }}</td>
+                                        <td>{{ item.tanggal }}</td>
+                                        <td>{{ item.shiftcode }}</td>
+                                        <td>{{ item.normal_in }}</td>
+                                        <td>{{ item.machine_in }}</td>
 
-                                <td>
-                                <span v-if="item.terlambat != '00:00:00'" class="text-danger">
-                                {{ item.terlambat }}
-                                </span>
-                                <span v-else>-</span>
-                                </td>
+                                        <td>
+                                        <span v-if="item.terlambat != '00:00:00'" class="text-danger">
+                                            {{ item.terlambat }}
+                                        </span>
+                                        <span v-else>-</span>
+                                        </td>
 
-                                <td>{{ item.normal_out }}</td>
-                                <td>{{ item.machine_out }}</td>
+                                        <td>{{ item.normal_out }}</td>
+                                        <td>{{ item.machine_out }}</td>
 
-                                <td>
-                                <span v-if="item.pulang_cepat != '00:00:00'" class="text-danger">
-                                {{ item.pulang_cepat }}
-                                </span>
-                                <span v-else>-</span>
-                                </td>
+                                        <td>
+                                        <span v-if="item.pulang_cepat != '00:00:00'" class="text-danger">
+                                            {{ item.pulang_cepat }}
+                                        </span>
+                                        <span v-else>-</span>
+                                        </td>
 
-                                <td>
-                                <span class="badge" :class="getBadge(item.keterangan)">
-                                    {{ item.keterangan }}
-                                </span>
-                                </td>
+                                        <td>
+                                        <span class="badge" :class="getBadge(item.keterangan)">
+                                            {{ item.keterangan }}
+                                        </span>
+                                        </td>
 
-                            </tr>
-                        </tbody>
-
-                    </table>
-
-                    </div>
-
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

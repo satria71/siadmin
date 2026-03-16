@@ -69,7 +69,20 @@ const { getTable } = useDataTable(
             { data: 'lam', name: 'lam' },
             { data: 'lap', name: 'lap' },
             { data: 'mangkir', name: 'mangkir' },
-            { data: 'fraud', name: 'fraud' }
+            { data: 'fraud', name: 'fraud' },
+            {
+                data: 'nik',
+                name: 'action',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    return `
+                        <button class="btn btn-info btn-sm detail-btn" data-id="${data}">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    `;
+                }
+            },
         ],
     {
         dom:
@@ -143,6 +156,29 @@ const { getTable } = useDataTable(
     },
 )
 
+const detailData = ref([])
+const modalDetail = ref(null)
+
+onMounted(() => {
+
+  const table = getTable()
+
+  // event klik tombol detail
+  $('#setTable').on('click', '.detail-btn', function () {
+
+      const id = $(this).data('id')
+
+      axios.get(`/absensi/detail/${id}`)
+      .then(res => {
+          detailData.value = res.data
+
+          modalDetail.value = new Modal(document.getElementById('modalDetail'))
+          modalDetail.value.show()
+      })
+
+  })
+
+})
 
 const user = computed(() => usePage().props.auth.user)
 
@@ -196,6 +232,61 @@ const uploadFile = () => {
       uploading.value = false
     }
   })
+}
+
+const finalisasi = () => {
+
+  Swal.fire({
+    title:'Finalisasi data?',
+    text:'Data tidak bisa diubah setelah difinalisasi',
+    icon:'warning',
+    showCancelButton:true
+  }).then((result)=>{
+    if(result.isConfirmed){
+      router.post('/absensi/finalisasi',{
+        bulan:3,
+        tahun:2026
+      },{
+        onSuccess:()=>{
+          Swal.fire('Sukses','Data berhasil difinalisasi','success')
+          getTable().ajax.reload(null,false)
+        }
+      })
+    }
+  })
+}
+
+const getBadge = (ket) => {
+
+    if(ket === 'Libur') return 'badge bg-red text-red-fg'
+    if(ket === 'Hadir') return 'badge bg-blue text-blue-fg'
+    if(ket === 'Mangkir') return 'badge bg-red text-red-fg'
+    if(ket === 'Lupa Absen Masuk') return 'badge bg-yellow text-yellow-fg'
+    if(ket === 'Lupa Absen Pulang') return 'badge bg-yellow text-yellow-fg'
+    if(ket === 'Dinas Luar Kantor Pagi') return 'badge bg-dark text-dark-fg'
+
+    return 'bg-secondary'
+}
+
+const getRowClass = (item) => {
+
+    if(item.keterangan === 'Mangkir'){
+        return 'table-danger'
+    }
+
+    if(item.keterangan === 'Libur'){
+        return 'table-secondary'
+    }
+
+    if(item.terlambat && item.terlambat !== '00:00:00'){
+        return 'table-warning'
+    }
+
+    if(item.pulang_cepat && item.pulang_cepat !== '00:00:00'){
+        return 'table-orange'
+    }
+
+    return ''
 }
 
 defineOptions({
@@ -307,6 +398,9 @@ defineProps({
 
                             <div class="card-header">
                                 <h3 class="card-title">Resume Absensi</h3>
+                                <button class="btn btn-danger" @click="finalisasi">
+                                    Finalisasi Data
+                                </button>
                             </div>
 
                             <div class="card-body">
@@ -327,6 +421,7 @@ defineProps({
                                                 <th>LAM</th>
                                                 <th>Mangkir</th>
                                                 <th>Fraud</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -337,5 +432,75 @@ defineProps({
                 </div>
             </div>      
          </div>
+
+         <div class="modal modal-blur fade" id="modalDetail" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detail Absensi</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                    <table id="setTable" class="table table-vcenter table-striped">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Shift</th>
+                                <th>Normal In</th>
+                                <th>Machine In</th>
+                                <th>Terlambat</th>
+                                <th>Normal Out</th>
+                                <th>Machine Out</th>
+                                <th>Pulang Cepat</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr v-for="item in detailData" :key="item.tanggal" :class="getRowClass(item)">
+
+                                <td>{{ item.tanggal }}</td>
+                                <td>{{ item.shiftcode }}</td>
+                                <td>{{ item.normal_in }}</td>
+                                <td>{{ item.machine_in }}</td>
+
+                                <td>
+                                <span v-if="item.terlambat != '00:00:00'" class="text-danger">
+                                {{ item.terlambat }}
+                                </span>
+                                <span v-else>-</span>
+                                </td>
+
+                                <td>{{ item.normal_out }}</td>
+                                <td>{{ item.machine_out }}</td>
+
+                                <td>
+                                <span v-if="item.pulang_cepat != '00:00:00'" class="text-danger">
+                                {{ item.pulang_cepat }}
+                                </span>
+                                <span v-else>-</span>
+                                </td>
+
+                                <td>
+                                <span class="badge" :class="getBadge(item.keterangan)">
+                                    {{ item.keterangan }}
+                                </span>
+                                </td>
+
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
     
 </template>

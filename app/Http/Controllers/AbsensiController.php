@@ -6,6 +6,7 @@ use App\Models\Absensi;
 use Illuminate\Support\Facades\DB;
 use App\Imports\AbsensiImport;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 use Illuminate\Http\Request;
 
@@ -16,15 +17,91 @@ class AbsensiController extends Controller
         return Inertia::render('absensi/Absensi');
     }
 
+    // public function upload(Request $request)
+    // {
+    //     $request->validate([
+    //         'file' => 'required|mimes:xlsx,xls'
+    //     ]);
+
+    //     $rows = Excel::toArray([], $request->file('file'));
+
+    //     if (!isset($rows[0][1][1])) {
+    //         return back()->with('error','Kolom tanggal tidak ditemukan');
+    //     }
+
+    //     $tanggal = Date::excelToDateTimeObject($rows[0][1][1])->format('Y-m-d');
+
+    //     $bulan = date('m', strtotime($tanggal));
+    //     $tahun = date('Y', strtotime($tanggal));
+
+    //     $cekFinal = DB::table('absensis')
+    //         ->whereMonth('tanggal',$bulan)
+    //         ->whereYear('tanggal',$tahun)
+    //         ->where('status_data','final')
+    //         ->exists();
+
+    //     if ($cekFinal) {
+    //         return back()->with('error','Data bulan ini sudah difinalisasi');
+    //     }
+
+    //     DB::table('absensis')
+    //         ->whereMonth('tanggal',$bulan)
+    //         ->whereYear('tanggal',$tahun)
+    //         ->where('status_data','draft')
+    //         ->delete();
+
+    //     Excel::import(new AbsensiImport($bulan,$tahun), $request->file('file'));
+
+    //     return back()->with('success','Import berhasil');
+    // }
+
     public function upload(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
         ]);
 
-        Excel::import(new AbsensiImport, $request->file('file'));
+        $rows = Excel::toArray([], $request->file('file'));
 
-        return redirect()->back()->with('success','Import berhasil');
+        $tanggal = Date::excelToDateTimeObject($rows[0][1][1])->format('Y-m-d');
+
+        $bulan = date('m', strtotime($tanggal));
+        $tahun = date('Y', strtotime($tanggal));
+
+        $cekFinal = DB::table('absensis')
+            ->whereMonth('tanggal',$bulan)
+            ->whereYear('tanggal',$tahun)
+            ->where('status_data','final')
+            ->exists();
+
+        if ($cekFinal) {
+            return back()->with('error','Data bulan ini sudah difinalisasi');
+        }
+
+        DB::table('absensis')
+            ->whereMonth('tanggal',$bulan)
+            ->whereYear('tanggal',$tahun)
+            ->where('status_data','draft')
+            ->delete();
+
+        Excel::import(new AbsensiImport($bulan,$tahun), $request->file('file'));
+
+        return back()->with('success','Import berhasil');
+    }
+
+    public function finalisasi(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        DB::table('absensis')
+            ->whereMonth('tanggal',$bulan)
+            ->whereYear('tanggal',$tahun)
+            ->update([
+                'status_data' => 'final'
+            ]);
+
+        return back()->with('success','Data berhasil difinalisasi');
     }
 
     public function data(Request $request)
@@ -204,5 +281,43 @@ class AbsensiController extends Controller
             "recordsFiltered" => $total,
             "data" => $data
         ]);
+    }
+
+    public function detail($nik)
+    {
+        $data = DB::table('absensis as a')
+            ->leftJoin('shifts as s','a.shiftcode','=','s.shiftcode')
+            ->selectRaw("
+                a.tanggal,
+                a.shiftcode,
+                s.jam_masuk as normal_in,
+                s.jam_pulang as normal_out,
+                a.machine_in,
+                a.machine_out,
+                a.keterangan,
+
+                /* HITUNG TERLAMBAT */
+                CASE
+                    WHEN a.machine_in IS NULL OR a.machine_in = '00:00:00'
+                    THEN '00:00:00'
+                    WHEN TIME(a.machine_in) > s.jam_masuk
+                    THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, s.jam_masuk, a.machine_in))
+                    ELSE '00:00:00'
+                END AS terlambat,
+
+                /* HITUNG PULANG CEPAT */
+                CASE
+                    WHEN a.machine_out IS NULL OR a.machine_out = '00:00:00'
+                    THEN '00:00:00'
+                    WHEN TIME(a.machine_out) < s.jam_pulang
+                    THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, a.machine_out, s.jam_pulang))
+                    ELSE '00:00:00'
+                END AS pulang_cepat
+            ")
+            ->where('a.nik',$nik)
+            ->orderBy('a.tanggal')
+            ->get();
+
+        return response()->json($data);
     }
 }

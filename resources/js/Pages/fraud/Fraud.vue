@@ -547,7 +547,7 @@ defineProps({
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-6 position-relative autocomplete-wrapper">
-                                <FormInput label="NIK" name="nik" v-model="form.nik" :error="form.errors.nik" @keydown="handleKeydown"/>
+                                <FormInput label="NIK" name="nik" v-model="form.nik" :error="form.errors.nik"/>
                                 <ul
                                     v-if="showSuggestions && suggestions.length"
                                     class="list-group position-absolute w-100 shadow"

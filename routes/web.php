@@ -76,4 +76,6 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi');
     Route::post('/absensi/upload', [AbsensiController::class, 'upload'])->name('absensi.upload');
     Route::get('/absensi/data', [AbsensiController::class, 'data']);
+    Route::post('/absensi/finalisasi',[AbsensiController::class,'finalisasi']);
+    Route::get('/absensi/detail/{id}', [AbsensiController::class,'detail']);
 });

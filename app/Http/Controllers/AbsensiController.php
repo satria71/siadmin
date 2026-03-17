@@ -374,4 +374,9 @@ class AbsensiController extends Controller
 
         return response()->json($data);
     }
+
+    public function downloadFormat()
+    {
+        return Excel::download(new \App\Exports\AbsensiTemplateExport, 'format_absensi.xlsx');
+    }
 }

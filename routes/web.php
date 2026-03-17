@@ -82,4 +82,5 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/absensi/chart',[AbsensiController::class,'chart']);
     Route::get('/absensi/ranking',[AbsensiController::class,'ranking']);
     Route::get('/absensi/heatmap',[AbsensiController::class,'heatmap']);
+    Route::get('/absensi/download-format', [AbsensiController::class, 'downloadFormat']);
 });

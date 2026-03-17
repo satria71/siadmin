@@ -293,6 +293,10 @@ const getRowClass = (item) => {
     return ''
 }
 
+const downloadFormat = () => {
+  window.open('/absensi/download-format', '_blank')
+}
+
 defineOptions({
   layout: Layout
 })

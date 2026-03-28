@@ -283,40 +283,119 @@ class AbsensiController extends Controller
         ]);
     }
 
+    // public function detail($nik)
+    // {
+    //     $data = DB::table('absensis as a')
+    //         ->leftJoin('shifts as s','a.shiftcode','=','s.shiftcode')
+    //         ->selectRaw("
+    //             a.tanggal,
+    //             a.shiftcode,
+    //             s.jam_masuk as normal_in,
+    //             s.jam_pulang as normal_out,
+    //             a.machine_in,
+    //             a.machine_out,
+    //             a.keterangan,
+
+    //             /* HITUNG TERLAMBAT */
+    //             CASE
+    //                 WHEN a.machine_in IS NULL OR a.machine_in = '00:00:00'
+    //                 THEN '00:00:00'
+    //                 WHEN TIME(a.machine_in) > s.jam_masuk
+    //                 THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, s.jam_masuk, a.machine_in))
+    //                 ELSE '00:00:00'
+    //             END AS terlambat,
+
+    //             /* HITUNG PULANG CEPAT */
+    //             CASE
+    //                 WHEN a.machine_out IS NULL OR a.machine_out = '00:00:00'
+    //                 THEN '00:00:00'
+    //                 WHEN TIME(a.machine_out) < s.jam_pulang
+    //                 THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, a.machine_out, s.jam_pulang))
+    //                 ELSE '00:00:00'
+    //             END AS pulang_cepat
+    //         ")
+    //         ->where('a.nik',$nik)
+    //         ->orderBy('a.tanggal')
+    //         ->get();
+
+    //     return response()->json($data);
+    // }
+
     public function detail($nik)
     {
-        $data = DB::table('absensis as a')
-            ->leftJoin('shifts as s','a.shiftcode','=','s.shiftcode')
-            ->selectRaw("
-                a.tanggal,
-                a.shiftcode,
-                s.jam_masuk as normal_in,
-                s.jam_pulang as normal_out,
-                a.machine_in,
-                a.machine_out,
-                a.keterangan,
+        $data = DB::table(DB::raw("
+            (
+                SELECT
+                    a.nik,
+                    a.tanggal,
+                    a.shiftcode,
+                    a.keterangan,
+                    s.jam_masuk,
+                    s.jam_pulang,
 
-                /* HITUNG TERLAMBAT */
-                CASE
-                    WHEN a.machine_in IS NULL OR a.machine_in = '00:00:00'
-                    THEN '00:00:00'
-                    WHEN TIME(a.machine_in) > s.jam_masuk
-                    THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, s.jam_masuk, a.machine_in))
-                    ELSE '00:00:00'
-                END AS terlambat,
+                    /* MACHINE IN */
+                    CASE
+                        WHEN a.machine_in = '00:00:00' OR a.machine_in IS NULL
+                        THEN NULL
+                        ELSE TIMESTAMP(DATE(a.tanggal), a.machine_in)
+                    END AS machine_in,
 
-                /* HITUNG PULANG CEPAT */
-                CASE
-                    WHEN a.machine_out IS NULL OR a.machine_out = '00:00:00'
-                    THEN '00:00:00'
-                    WHEN TIME(a.machine_out) < s.jam_pulang
-                    THEN SEC_TO_TIME(TIMESTAMPDIFF(SECOND, a.machine_out, s.jam_pulang))
-                    ELSE '00:00:00'
-                END AS pulang_cepat
-            ")
-            ->where('a.nik',$nik)
-            ->orderBy('a.tanggal')
-            ->get();
+                    /* MACHINE OUT NORMALISASI */
+                    CASE
+                        WHEN a.machine_out = '00:00:00' OR a.machine_out IS NULL
+                        THEN NULL
+                        WHEN a.machine_out < s.jam_masuk
+                        THEN TIMESTAMP(DATE(a.tanggal) + INTERVAL 1 DAY, a.machine_out)
+                        ELSE TIMESTAMP(DATE(a.tanggal), a.machine_out)
+                    END AS real_machine_out,
+
+                    /* SHIFT START */
+                    TIMESTAMP(DATE(a.tanggal), s.jam_masuk) AS shift_start,
+
+                    /* SHIFT END */
+                    CASE
+                        WHEN s.jam_pulang < s.jam_masuk
+                        THEN TIMESTAMP(DATE(a.tanggal) + INTERVAL 1 DAY, s.jam_pulang)
+                        ELSE TIMESTAMP(DATE(a.tanggal), s.jam_pulang)
+                    END AS shift_end
+
+                FROM absensis a
+                LEFT JOIN shifts s ON a.shiftcode = s.shiftcode
+            ) t
+        "))
+        ->selectRaw("
+            tanggal,
+            shiftcode,
+            jam_masuk AS normal_in,
+            jam_pulang AS normal_out,
+
+            TIME(machine_in) AS machine_in,
+            TIME(real_machine_out) AS machine_out,
+            keterangan,
+
+            /* TERLAMBAT */
+            CASE
+                WHEN machine_in IS NOT NULL
+                AND machine_in > shift_start
+                THEN SEC_TO_TIME(
+                    GREATEST(TIMESTAMPDIFF(SECOND, shift_start, machine_in),0)
+                )
+                ELSE '00:00:00'
+            END AS terlambat,
+
+            /* PULANG CEPAT */
+            CASE
+                WHEN real_machine_out IS NOT NULL
+                AND real_machine_out < shift_end
+                THEN SEC_TO_TIME(
+                    GREATEST(TIMESTAMPDIFF(SECOND, real_machine_out, shift_end),0)
+                )
+                ELSE '00:00:00'
+            END AS pulang_cepat
+        ")
+        ->where('nik', $nik)
+        ->orderBy('tanggal')
+        ->get();
 
         return response()->json($data);
     }

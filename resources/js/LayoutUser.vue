@@ -25,7 +25,7 @@ const user = computed(() => usePage().props.auth.user)
             </button>
             <!-- END NAVBAR TOGGLER -->
             <!-- BEGIN NAVBAR LOGO -->
-            <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
+            <!-- <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
                 <a href="." aria-label="Tabler"
                 ><svg xmlns="http://www.w3.org/2000/svg" width="110" height="32" viewBox="0 0 232 68" class="navbar-brand-image">
                     <path
@@ -40,12 +40,13 @@ const user = computed(() => usePage().props.auth.user)
                     fill="#4a4a4a"/>
                     </svg>
                     </a>
-            </div>
+            </div> -->
+            <h1>SIADMIN</h1>
             <!-- END NAVBAR LOGO -->
             <div class="navbar-nav flex-row order-md-last">
                 <div class="nav-item d-none d-md-flex me-3">
                 <div class="btn-list">
-                    <a href="https://github.com/tabler/tabler" class="btn btn-5" target="_blank" rel="noreferrer">
+                    <a href="#" class="btn btn-5" target="_blank" rel="noreferrer">
                     <!-- Download SVG icon from http://tabler.io/icons/icon/brand-github -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +66,7 @@ const user = computed(() => usePage().props.auth.user)
                     </svg>
                     Source code
                     </a>
-                    <a href="https://github.com/sponsors/codecalm" class="btn btn-6" target="_blank" rel="noreferrer">
+                    <a href="#" class="btn btn-6" target="_blank" rel="noreferrer">
                     <!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -357,10 +358,11 @@ const user = computed(() => usePage().props.auth.user)
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" data-bs-theme="light">
                     <a href="#" class="dropdown-item">Status</a>
-                    <a href="./profile.html" class="dropdown-item">Profile</a>
+                    <a href="#" class="dropdown-item">Profile</a>
                     <a href="#" class="dropdown-item">Feedback</a>
                     <div class="dropdown-divider"></div>
-                    <a href="./settings.html" class="dropdown-item">Settings</a>
+                    <a href="#" class="dropdown-item">Settings</a>
+                    <!-- <Link href="#" method="post" as="button" class="dropdown-item">Logout</Link> -->
                     <Link href="/logout" method="post" as="button" class="dropdown-item">Logout</Link>
                 </div>
                 </div>
@@ -667,55 +669,56 @@ const user = computed(() => usePage().props.auth.user)
         </header>
         <!-- END NAVBAR  -->
         <div class="page-wrapper">
+
             <slot />
             
             <!-- END PAGE BODY -->
             <!--  BEGIN FOOTER  -->
             <footer class="footer footer-transparent d-print-none">
-            <div class="container-xl">
-                <div class="row text-center align-items-center flex-row-reverse">
-                <div class="col-lg-auto ms-lg-auto">
-                    <ul class="list-inline list-inline-dots mb-0">
-                    <li class="list-inline-item"><a href="https://docs.tabler.io" target="_blank" class="link-secondary" rel="noopener">Documentation</a></li>
-                    <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
-                    <li class="list-inline-item">
-                        <a href="https://github.com/tabler/tabler" target="_blank" class="link-secondary" rel="noopener">Source code</a>
-                    </li>
-                    <li class="list-inline-item">
-                        <a href="https://github.com/sponsors/codecalm" target="_blank" class="link-secondary" rel="noopener">
-                        <!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="icon text-pink icon-inline icon-4"
-                        >
-                            <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
-                        </svg>
-                        Sponsor
-                        </a>
-                    </li>
-                    </ul>
+                <div class="container-xl">
+                    <div class="row text-center align-items-center flex-row-reverse">
+                    <div class="col-lg-auto ms-lg-auto">
+                        <ul class="list-inline list-inline-dots mb-0">
+                        <li class="list-inline-item"><a href="https://docs.tabler.io" target="_blank" class="link-secondary" rel="noopener">Documentation</a></li>
+                        <li class="list-inline-item"><a href="./license.html" class="link-secondary">License</a></li>
+                        <li class="list-inline-item">
+                            <a href="#" target="_blank" class="link-secondary" rel="noopener">Source code</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="#" target="_blank" class="link-secondary" rel="noopener">
+                            <!-- Download SVG icon from http://tabler.io/icons/icon/heart -->
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="icon text-pink icon-inline icon-4"
+                            >
+                                <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                            </svg>
+                            Sponsor
+                            </a>
+                        </li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                        <ul class="list-inline list-inline-dots mb-0">
+                        <li class="list-inline-item">
+                            Copyright &copy; 2025
+                            <a href="." class="link-secondary">Satria Putra Sabana</a>. All rights reserved.
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="./changelog.html" class="link-secondary" rel="noopener"> v1.4.0 </a>
+                        </li>
+                        </ul>
+                    </div>
+                    </div>
                 </div>
-                <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                    <ul class="list-inline list-inline-dots mb-0">
-                    <li class="list-inline-item">
-                        Copyright &copy; 2025
-                        <a href="." class="link-secondary">Satria Putra Sabana</a>. All rights reserved.
-                    </li>
-                    <li class="list-inline-item">
-                        <a href="./changelog.html" class="link-secondary" rel="noopener"> v1.4.0 </a>
-                    </li>
-                    </ul>
-                </div>
-                </div>
-            </div>
             </footer>
             <!--  END FOOTER  -->
         </div>

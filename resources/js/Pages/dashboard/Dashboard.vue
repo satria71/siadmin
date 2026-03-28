@@ -1,85 +1,94 @@
 <script setup>
 import Layout from '../../LayoutUser.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, usePage } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
 defineProps({ user: Object })
+
+const page = usePage()
+
+const user = computed(() => page.props.auth.user)
+const absensi = computed(() => page.props.absensi || [])
+
+defineOptions({
+  layout: Layout
+})
 
 </script>
 
 <template>
-    <Layout>
-        <Head title="Welcome" />
-        <!-- BEGIN PAGE HEADER -->
-            <div class="page-header d-print-none" aria-label="Page header">
+    <Head title="Dashboard" />
+    <!-- BEGIN PAGE HEADER -->
+        <div class="page-header d-print-none" aria-label="Page header">
             <div class="container-xl">
                 <div class="row g-2 align-items-center">
-                <div class="col">
-                    <!-- Page pre-title -->
-                    <div class="page-pretitle">Overview</div>
-                    <h2 class="page-title">Navbar dark</h2>
-                </div>
-                <!-- Page title actions -->
-                <div class="col-auto ms-auto d-print-none">
-                    <div class="btn-list">
-                    <span class="d-none d-sm-inline">
-                        <a href="#" class="btn btn-1"> New view </a>
-                    </span>
-                    <a href="#" class="btn btn-primary btn-5 d-none d-sm-inline-block" data-bs-toggle="modal" data-bs-target="#modal-report">
-                        <!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="icon icon-2"
-                        >
-                        <path d="M12 5l0 14" />
-                        <path d="M5 12l14 0" />
-                        </svg>
-                        Create new report
-                    </a>
-                    <a
-                        href="#"
-                        class="btn btn-primary btn-6 d-sm-none btn-icon"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-report"
-                        aria-label="Create new report"
-                    >
-                        <!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="icon icon-2"
-                        >
-                        <path d="M12 5l0 14" />
-                        <path d="M5 12l14 0" />
-                        </svg>
-                    </a>
+                    <div class="col">
+                        <!-- Page pre-title -->
+                        <div class="page-pretitle">Overview</div>
+                        <h2 class="page-title">Halo, {{ user?.nama }}</h2>
+                        <p>NIK: {{ user?.nik }}</p>
                     </div>
-                    <!-- BEGIN MODAL -->
-                    <!-- END MODAL -->
-                </div>
                 </div>
             </div>
-            </div>
-            <!-- END PAGE HEADER -->
-            <!-- BEGIN PAGE BODY -->
-            <div class="page-body">
-                <div class="container-xl">
+        </div>
+        <!-- END PAGE HEADER -->
+
+        <!-- BEGIN PAGE BODY -->
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="card mt-3">
+                    <div class="card-header">
+                    <h3 class="card-title">Data Absensi</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Shift</th>
+                                    <th>Normal In</th>
+                                    <th>Machine In</th>
+                                    <th>Terlambat</th>
+                                    <th>Normal Out</th>
+                                    <th>Machine Out</th>
+                                    <th>Pulang Cepat</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in absensi" :key="item.tanggal">
+                                    <td>{{ item.tanggal }}</td>
+                                    <td>{{ item.shiftcode }}</td>
+
+                                    <td>{{ item.normal_in }}</td>
+                                    <td>{{ item.machine_in }}</td>
+
+                                    <td>{{ item.terlambat }}</td>
+
+                                    <td>{{ item.normal_out }}</td>
+                                    <td>{{ item.machine_out }}</td>
+
+                                    <td>{{ item.pulang_cepat }}</td>
+
+                                    <td>
+                                        <span 
+                                            class="badge"
+                                            :class="{
+                                                'bg-danger': item.status === 'MANGKIR',
+                                                'bg-warning': item.status === 'TELAT',
+                                                'bg-info': item.status === 'PULANG CEPAT',
+                                                'bg-success': item.status === 'NORMAL'
+                                            }"
+                                        >
+                                            {{ item.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-    </Layout>
-    
+        </div>
 </template>

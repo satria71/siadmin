@@ -7,6 +7,7 @@ use App\Http\Controllers\FraudController;
 use App\Http\Controllers\SerahTerimaController;
 use App\Http\Controllers\MasterKaryawanController;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\DashboardController;
 
 use Inertia\Inertia;
 
@@ -20,18 +21,30 @@ Route::post('/login', [AuthController::class, 'proseslogin'])
     ->name('login');
 
 Route::get('/login', function () {
+
+    if (Auth::guard('karyawan')->check()) {
+        $user = Auth::guard('karyawan')->user();
+
+        return $user->flag == 'admin'
+            ? redirect('/panel')
+            : redirect('/dashboard');
+    }
+
     return Inertia::render('auth/Login');
 })->name('login');
 
 
 Route::middleware('auth:karyawan')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('dashboard/Dashboard');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return Inertia::render('dashboard/Dashboard');
+    // })->name('dashboard');
 
     Route::post('/logout', [AuthController::class, 'logout'])
         ->name('logout');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
 });
 
@@ -83,4 +96,5 @@ Route::middleware(['auth:karyawan', 'admin'])->group(function () {
     Route::get('/absensi/ranking',[AbsensiController::class,'ranking']);
     Route::get('/absensi/heatmap',[AbsensiController::class,'heatmap']);
     Route::get('/absensi/download-format', [AbsensiController::class, 'downloadFormat']);
+
 });

@@ -26,7 +26,7 @@ class AbsensiTemplateExport implements FromCollection,WithHeadings
             'NORMAL OUT',
             'MACHINE IN',
             'MACHINE OUT',
-            'SHIFCODE',
+            'SHIFTCODE',
             'KETERANGAN',
             'STATUS IZIN',
             'KET IZIN',
